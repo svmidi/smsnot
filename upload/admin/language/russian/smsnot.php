@@ -2,22 +2,23 @@
 $_['heading_title']         = 'Smsnot for SMS.RU';
 $_['button_save']           = 'Сохранить';
 $_['button_cancel']         = 'Отмена';
-$_['button_test']             = 'Отправить тестовое сообщение';
-$_['text_sending']          = 'Рассылка';
-$_['text_notice']           = 'Уведомления';
-$_['text_gate']             = 'Настройки шлюза';
+$_['button_test']           = 'Отправить тестовое сообщение';
+$_['tab_sending']           = 'Рассылка';
+$_['tab_notice']            = 'Уведомления';
+$_['tab_gate']              = 'Настройки шлюза';
 
-$_['text_to']               = 'Кому:';
-$_['text_sender']           = 'Отправитель:';
-$_['text_message']          = 'Текст сообщения:';
-$_['text_enabled']          = 'Включить:';
+$_['entry_to']               = 'Кому:';
+$_['entry_sender']           = 'Отправитель:';
+$_['entry_message']          = 'Текст сообщения:';
+$_['entry_enabled']          = 'Включить:';
+$_['entry_message_template'] = 'Шаблон сообщения:';
+$_['entry_api_key']          = 'API key:';
+$_['entry_phone']            = 'Номер владельца магазина:';
+$_['entry_balance']          = 'Баланс:';
+
 $_['text_enable']           = 'Включено';
 $_['text_disabled']         = 'Выключено';
-
-$_['text_message_template'] = 'Шаблон сообщения:';
-$_['text_api_key']          = 'API key:';
-$_['text_phone']            = 'Номер владельца магазина:';
-$_['text_balance']          = 'Баланс:';
+$_['text_description']      = 'SMS-уведомления';
 $_['text_newsletter']       = 'Подписаным на новости';
 $_['text_all']              = 'Всем';
 $_['text_all_group']        = 'Всем из группы';

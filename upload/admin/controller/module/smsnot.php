@@ -14,7 +14,7 @@ class ControllerModuleSmsnot extends Controller {
 		$this->document->setTitle($this->language->get('heading_title'));
 
 		if(!isset($this->request->get['store_id'])) {
-		   $this->request->get['store_id'] = 0; 
+			$this->request->get['store_id'] = 0; 
 		}
 	
 		$store = $this->getCurrentStore($this->request->get['store_id']);
@@ -67,18 +67,21 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['button_save'] = $this->language->get('save_changes');
 		$this->data['button_cancel'] = $this->language->get('button_cancel');
 		$this->data['button_test'] = $this->language->get('button_test');
-		$this->data['text_sending'] = $this->language->get('text_sending');
-		$this->data['text_notice'] = $this->language->get('text_notice');
-		$this->data['text_gate'] = $this->language->get('text_gate');
 
-		$this->data['text_to'] = $this->language->get('text_to');
-		$this->data['text_sender'] = $this->language->get('text_sender');
-		$this->data['text_message'] = $this->language->get('text_message');
-		$this->data['text_enabled'] = $this->language->get('text_enabled');
-		$this->data['text_message_template'] = $this->language->get('text_message_template');
-		$this->data['text_api_key'] = $this->language->get('text_api_key');
-		$this->data['text_phone'] = $this->language->get('text_phone');
-		$this->data['text_balance'] = $this->language->get('text_balance');
+		$this->data['tab_sending'] = $this->language->get('tab_sending');
+		$this->data['tab_notice'] = $this->language->get('tab_notice');
+		$this->data['tab_gate'] = $this->language->get('tab_gate');
+
+		$this->data['entry_to'] = $this->language->get('text_to');
+		$this->data['entry_sender'] = $this->language->get('text_sender');
+		$this->data['entry_message'] = $this->language->get('text_message');
+		$this->data['entry_enabled'] = $this->language->get('text_enabled');
+		$this->data['entry_message_template'] = $this->language->get('text_message_template');
+		$this->data['entry_api_key'] = $this->language->get('text_api_key');
+		$this->data['entry_phone'] = $this->language->get('text_phone');
+		$this->data['entry_balance'] = $this->language->get('text_balance');
+
+		$this->data['text_description'] = $this->language->get('text_description');
 		$this->data['text_newsletter'] = $this->language->get('text_newsletter');
 		$this->data['text_all'] = $this->language->get('text_all');
 		$this->data['text_all_group'] = $this->language->get('text_all_group');
@@ -90,11 +93,9 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['stores'] = array_merge(array(0 => array('store_id' => '0', 'name' => $this->config->get('config_name') . ' ' . $this->data['text_default'], 'url' => HTTP_SERVER, 'ssl' => HTTPS_SERVER)), $this->model_setting_store->getStores());
 
 		$this->data['error_warning']  = '';  
-		$this->data['languages']      = $this->model_localisation_language->getLanguages();
-		$this->data['store']          = $store;
 		$this->data['action']         = $this->url->link('module/smsnot', 'token=' . $this->session->data['token'], 'SSL');
 		$this->data['cancel']         = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
-		$this->data['data']           = $this->model_setting_setting->getSetting('SMSBump', $store['store_id']);
+		$this->data['data']           = $this->model_setting_setting->getSetting('smsnot');
 		
 		if(strcmp(VERSION,"2.1.0.1") < 0) {
 			$this->load->model('sale/customer_group');
@@ -103,9 +104,8 @@ class ControllerModuleSmsnot extends Controller {
 			$this->load->model('customer/customer_group');
 			$this->data['customer_groups'] = $this->model_customer_customer_group->getCustomerGroups(0);
 		}
-	
 
-		$this->data['header']  		= $this->load->controller('common/header');
+		$this->data['header']		= $this->load->controller('common/header');
 		$this->data['column_left']	= $this->load->controller('common/column_left');
 		$this->data['footer']		= $this->load->controller('common/footer');
 		$this->response->setOutput($this->load->view('module/smsnot.tpl', $this->data));
