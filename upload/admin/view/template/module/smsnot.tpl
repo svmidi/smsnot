@@ -3,7 +3,7 @@
   <div class="page-header">
 	<div class="container-fluid">
 	  <div class="pull-right">
-		<button type="submit" form="form-category" data-toggle="tooltip" title="<?php echo $button_save; ?>" class="btn btn-primary"><i class="fa fa-save"></i></button>
+		<button type="submit" form="form-smsnot" data-toggle="tooltip" title="<?php echo $button_save; ?>" class="btn btn-primary"><i class="fa fa-save"></i></button>
 		<a href="<?php echo $cancel; ?>" data-toggle="tooltip" title="<?php echo $button_cancel; ?>" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
 	  <h1><?php echo $heading_title; ?></h1>
 	  <ul class="breadcrumb">
@@ -24,7 +24,7 @@
 		<h3 class="panel-title"><i class="fa fa-pencil"></i> <?php echo $text_description; ?></h3>
 	  </div>
 	  <div class="panel-body">
-		<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-category" class="form-horizontal">
+		<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-smsnot" class="form-horizontal">
 		  <ul class="nav nav-tabs">
 			<li class="active"><a href="#tab-sending" data-toggle="tab"><?php echo $tab_sending; ?></a></li>
 			<li><a href="#tab-notice" data-toggle="tab"><?php echo $tab_notice; ?></a></li>
@@ -82,6 +82,7 @@
 						<?php } else { ?>
 						<input type="checkbox" name="new_order" value="0" />
 						<?php } ?>
+						<?php echo $text_new_order; ?>
 					  </label>
 					</div>
 					<div class="checkbox">
@@ -91,15 +92,17 @@
 						<?php } else { ?>
 						<input type="checkbox" name="order_change" value="0" />
 						<?php } ?>
+						<?php echo $text_order_change; ?>
 					  </label>
 					</div>
 					<div class="checkbox">
 					  <label>
-						<?php if ($text_owner) { ?>
-						<input type="checkbox" name="text_owner" value="1" checked="checked" />
+						<?php if ($owner) { ?>
+						<input type="checkbox" name="owner" value="1" checked="checked" />
 						<?php } else { ?>
-						<input type="checkbox" name="text_owner" value="0" />
+						<input type="checkbox" name="owner" value="0" />
 						<?php } ?>
+						<?php echo $text_owner; ?>
 					  </label>
 					</div>
 				  </div>

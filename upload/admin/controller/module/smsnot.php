@@ -17,7 +17,7 @@ class ControllerModuleSmsnot extends Controller {
 			$this->request->get['store_id'] = 0; 
 		}
 	
-		$store = $this->getCurrentStore($this->request->get['store_id']);
+		//$store = $this->getCurrentStore($this->request->get['store_id']);
 		
 		if (($this->request->server['REQUEST_METHOD'] == 'POST')) { 	
 			if (!$this->user->hasPermission('modify', 'module/smsnot')) {
@@ -72,14 +72,14 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['tab_notice'] = $this->language->get('tab_notice');
 		$this->data['tab_gate'] = $this->language->get('tab_gate');
 
-		$this->data['entry_to'] = $this->language->get('text_to');
-		$this->data['entry_sender'] = $this->language->get('text_sender');
-		$this->data['entry_message'] = $this->language->get('text_message');
-		$this->data['entry_enabled'] = $this->language->get('text_enabled');
-		$this->data['entry_message_template'] = $this->language->get('text_message_template');
-		$this->data['entry_api_key'] = $this->language->get('text_api_key');
-		$this->data['entry_phone'] = $this->language->get('text_phone');
-		$this->data['entry_balance'] = $this->language->get('text_balance');
+		$this->data['entry_to'] = $this->language->get('entry_to');
+		$this->data['entry_sender'] = $this->language->get('entry_sender');
+		$this->data['entry_message'] = $this->language->get('entry_message');
+		$this->data['entry_enabled'] = $this->language->get('entry_enabled');
+		$this->data['entry_message_template'] = $this->language->get('entry_message_template');
+		$this->data['entry_api_key'] = $this->language->get('entry_api_key');
+		$this->data['entry_phone'] = $this->language->get('entry_phone');
+		$this->data['entry_balance'] = $this->language->get('entry_balance');
 
 		$this->data['text_description'] = $this->language->get('text_description');
 		$this->data['text_newsletter'] = $this->language->get('text_newsletter');
@@ -89,6 +89,8 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['text_new_order'] = $this->language->get('text_new_order');
 		$this->data['text_order_change'] = $this->language->get('text_order_change');
 		$this->data['text_owner'] = $this->language->get('text_owner');
+		$this->data['text_enable'] = $this->language->get('text_enable');
+		$this->data['text_disable'] = $this->language->get('text_disable');
 
 		$this->data['stores'] = array_merge(array(0 => array('store_id' => '0', 'name' => $this->config->get('config_name') . ' ' . $this->data['text_default'], 'url' => HTTP_SERVER, 'ssl' => HTTPS_SERVER)), $this->model_setting_store->getStores());
 
