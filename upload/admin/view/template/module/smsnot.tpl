@@ -21,7 +21,17 @@
 	<?php } ?>
 	<div class="panel panel-default">
 	  <div class="panel-heading">
-		<h3 class="panel-title"><i class="fa fa-pencil"></i> <?php echo $text_description; ?></h3>
+	  	<div class="row">
+	  		<div class="col-sm-6">
+				<h3 class="panel-title"><i class="fa fa-pencil"></i> <?php echo $text_description; ?></h3>
+	  		</div>
+	  		<div class="col-sm-6 text-right">
+	  			<div class="btn-group" role="group" aria-label="...">
+	  				<button type="button" class="btn btn-default" title="<?php echo $text_refresh; ?>"><?php echo $entry_balance; ?> <?php echo $balance; ?></button>
+	  				<a href="#" class="btn btn-success" title="<?php echo $text_money_add; ?>">+</a>
+	  			</div>
+	  		</div>
+	  	</div>
 	  </div>
 	  <div class="panel-body">
 		<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-smsnot" class="form-horizontal">
@@ -46,14 +56,14 @@
 			  <div class="form-group">
 				<label class="col-sm-2 control-label" for="input-message"><?php echo $entry_message; ?></label>
 				<div class="col-sm-10">
-				  <textarea name="input-message" rows="5" placeholder="<?php echo $entry_message; ?>" id="input-message" class="form-control"></textarea>
+					<textarea name="input-message" rows="5" placeholder="<?php echo $entry_message; ?>" id="input-message" class="form-control"></textarea>
 				</div>
 			  </div>
 			  <div class="form-group">
-				<div class="col-sm-10">
-				  <button id="send"><?php echo $button_send; ?></button>
-				</div>
-			  </div>
+			      <div class="col-sm-offset-2 col-sm-10">
+			        <button class="btn btn-default" id="send"><?php echo $button_send; ?></button>
+			      </div>
+			    </div>
 			</div>
 			<div class="tab-pane fade" id="tab-notice">
 
@@ -71,6 +81,12 @@
 					</select>
 				</div>
 			  </div>
+			    <div class="form-group">
+			  	<label class="col-sm-2 control-label" for="input-message-template"><?php echo $entry_message_template; ?></label>
+			  	<div class="col-sm-10">
+			  		<textarea name="input-message-template" rows="5" placeholder="<?php echo $entry_message_template; ?>" id="input-message-template" class="form-control"></textarea>
+			  	</div>
+			    </div>
 			  <div class="form-group">
 				<label class="col-sm-2 control-label"><?php echo $entry_to; ?></label>
 				<div class="col-sm-10">
@@ -128,6 +144,14 @@
 					<label class="col-sm-2 control-label" for="input-sender"><?php echo $entry_sender; ?></label>
 					<div class="col-sm-10">
 					  <input name="input-sender" type="text" placeholder="<?php echo $entry_sender; ?>" id="input-sender" class="form-control">
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-6">
+						
+					</div>
+					<div class="col-sm-6">
+						<button class="btn btn-default" id="test_send"><?php echo $button_test; ?></button>
 					</div>
 				</div>
 
