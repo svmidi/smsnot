@@ -34,6 +34,7 @@
 	  	</div>
 	  </div>
 	  <div class="panel-body">
+	  	<?php print_r($data); ?>
 		<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-smsnot" class="form-horizontal">
 		  <ul class="nav nav-tabs">
 			<li class="active"><a href="#tab-sending" data-toggle="tab"><?php echo $tab_sending; ?></a></li>
@@ -70,8 +71,8 @@
 			  <div class="form-group">
 				<label class="col-sm-2 control-label" for="input-enabled"><?php echo $entry_enabled; ?></label>
 				<div class="col-sm-10">
-					<select name="input-enabled" class="form-control">
-						<?php if ($enabled) { ?>
+					<select name="smsnot-enabled" class="form-control">
+						<?php if ($data['smsnot-enabled']) { ?>
 						<option value="<?php echo $enabled; ?>" selected="selected"><?php echo $text_enable; ?></option>
 						<option value="<?php echo $enabled; ?>"><?php echo $text_disable; ?></option>
 						<?php } else { ?>
@@ -84,7 +85,7 @@
 			    <div class="form-group">
 			  	<label class="col-sm-2 control-label" for="input-message-template"><?php echo $entry_message_template; ?></label>
 			  	<div class="col-sm-10">
-			  		<textarea name="input-message-template" rows="5" placeholder="<?php echo $entry_message_template; ?>" id="input-message-template" class="form-control"></textarea>
+			  		<textarea name="smsnot-message-template" rows="5" placeholder="<?php echo $entry_message_template; ?>" id="input-message-template" class="form-control"><?php echo $data['smsnot-message-template']; ?></textarea>
 			  	</div>
 			    </div>
 			  <div class="form-group">
@@ -93,30 +94,30 @@
 				  <div class="well well-sm" style="height: 150px; overflow: auto;">
 					<div class="checkbox">
 					  <label>
-						<?php if ($new_order) { ?>
-						<input type="checkbox" name="new_order" value="1" checked="checked" />
+						<?php if ($data['smsnot-new-order']) { ?>
+						<input type="checkbox" name="smsnot-new-order" checked="checked" />
 						<?php } else { ?>
-						<input type="checkbox" name="new_order" value="0" />
+						<input type="checkbox" name="smsnot-new-order" />
 						<?php } ?>
 						<?php echo $text_new_order; ?>
 					  </label>
 					</div>
 					<div class="checkbox">
 					  <label>
-						<?php if ($order_change) { ?>
-						<input type="checkbox" name="order_change" value="1" checked="checked" />
+						<?php if ($data['smsnot-order-change']) { ?>
+						<input type="checkbox" name="smsnot-order-change" checked="checked" />
 						<?php } else { ?>
-						<input type="checkbox" name="order_change" value="0" />
+						<input type="checkbox" name="smsnot-order-change" />
 						<?php } ?>
 						<?php echo $text_order_change; ?>
 					  </label>
 					</div>
 					<div class="checkbox">
 					  <label>
-						<?php if ($owner) { ?>
-						<input type="checkbox" name="owner" value="1" checked="checked" />
+						<?php if ($data['smsnot-owner']) { ?>
+						<input type="checkbox" name="smsnot-owner" checked="checked" />
 						<?php } else { ?>
-						<input type="checkbox" name="owner" value="0" />
+						<input type="checkbox" name="smsnot-owner" />
 						<?php } ?>
 						<?php echo $text_owner; ?>
 					  </label>
@@ -131,19 +132,19 @@
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="input-apikey"><?php echo $entry_api_key; ?></label>
 					<div class="col-sm-10">
-					  <input name="input-apikey" type="text" placeholder="<?php echo $entry_api_key; ?>" id="input-apikey" class="form-control">
+					  <input name="smsnot-apikey" type="text" placeholder="<?php echo $entry_api_key; ?>" id="input-apikey" class="form-control" value="<?php echo $data['smsnot-apikey']; ?>">
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="input-phone"><?php echo $entry_phone; ?></label>
 					<div class="col-sm-10">
-					  <input name="input-phone" type="number" placeholder="<?php echo $entry_phone; ?>" id="input-phone" class="form-control">
+					  <input name="smsnot-phone" type="number" placeholder="<?php echo $entry_phone; ?>" id="input-phone" class="form-control" value="<?php echo $data['smsnot-phone']; ?>">
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="input-sender"><?php echo $entry_sender; ?></label>
 					<div class="col-sm-10">
-					  <input name="input-sender" type="text" placeholder="<?php echo $entry_sender; ?>" id="input-sender" class="form-control">
+					  <input name="smsnot-sender" type="text" placeholder="<?php echo $entry_sender; ?>" id="input-sender" class="form-control" value="<?php echo $data['smsnot-sender']; ?>">
 					</div>
 				</div>
 				<div class="form-group">

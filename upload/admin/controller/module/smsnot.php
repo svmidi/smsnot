@@ -22,13 +22,10 @@ class ControllerModuleSmsnot extends Controller {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST')) { 	
 			if (!$this->user->hasPermission('modify', 'module/smsnot')) {
 				$this->error['warning'] = $this->language->get('error_permission');
-			}
-
-			if (!$this->user->hasPermission('modify', 'module/smsnot')) {
 				$this->session->data['error'] = 'You do not have permissions to edit this module!';	
 			} else {
-				$this->model_setting_setting->editSetting('Smsnot', $this->request->post, $this->request->post['store_id']);
-				$this->session->data['success'] = $this->language->get('text_success');	
+				$this->model_setting_setting->editSetting('smsnot', $this->request->post, 0);
+				$this->session->data['success'] = $this->language->get('text_success');
 			}
 			$this->response->redirect(HTTP_SERVER.'index.php?route=module/smsnot&store_id='.$this->request->post['store_id'] . '&token=' . $this->session->data['token']);
 		}
@@ -67,6 +64,7 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['button_save'] = $this->language->get('save_changes');
 		$this->data['button_cancel'] = $this->language->get('button_cancel');
 		$this->data['button_test'] = $this->language->get('button_test');
+		$this->data['button_send'] = $this->language->get('button_send');
 
 		$this->data['tab_sending'] = $this->language->get('tab_sending');
 		$this->data['tab_notice'] = $this->language->get('tab_notice');
@@ -91,6 +89,9 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['text_owner'] = $this->language->get('text_owner');
 		$this->data['text_enable'] = $this->language->get('text_enable');
 		$this->data['text_disable'] = $this->language->get('text_disable');
+		$this->data['text_module'] = $this->language->get('text_module');
+		$this->data['text_money_add'] = $this->language->get('text_money_add');
+		$this->data['text_refresh'] = $this->language->get('text_refresh');
 
 		$this->data['stores'] = array_merge(array(0 => array('store_id' => '0', 'name' => $this->config->get('config_name') . ' ' . $this->data['text_default'], 'url' => HTTP_SERVER, 'ssl' => HTTPS_SERVER)), $this->model_setting_store->getStores());
 
@@ -98,6 +99,7 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['action']         = $this->url->link('module/smsnot', 'token=' . $this->session->data['token'], 'SSL');
 		$this->data['cancel']         = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
 		$this->data['data']           = $this->model_setting_setting->getSetting('smsnot');
+		$this->data['balance']        = 0;
 		
 		if(strcmp(VERSION,"2.1.0.1") < 0) {
 			$this->load->model('sale/customer_group');
