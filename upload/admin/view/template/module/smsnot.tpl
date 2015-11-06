@@ -34,7 +34,14 @@
 	  	</div>
 	  </div>
 	  <div class="panel-body">
-	  	<?php print_r($data); ?>
+	  	<pre>
+	  	<?php
+	  	foreach ($customer_groups as $value) {
+	  		$option_all='<option value="2'.$value['customer_group_id'].'">'.$text_all_group.' '.$value['name'].'</option>';
+	  		$option_news='<option value="3'.$value['customer_group_id'].'">'.$text_newsletter_group.' '.$value['name'].'</option>';
+	  	}
+	  	?>
+	  	</pre>
 		<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-smsnot" class="form-horizontal">
 		  <ul class="nav nav-tabs">
 			<li class="active"><a href="#tab-sending" data-toggle="tab"><?php echo $tab_sending; ?></a></li>
@@ -48,9 +55,9 @@
 				<label class="col-sm-2 control-label" for="input-to"><?php echo $entry_to; ?></label>
 				<div class="col-sm-10">
 				  <select name="input_to" id="input-to" class="form-control">
-					<option value="0"><?php echo $text_all;?></option>
-					<option value="1"><?php echo $text_all_group;?></option>
-					<option value="2"><?php echo $text_newsletter_group;?></option>
+					<option value="0"><?php echo $text_all; ?></option>
+					<option value="1"><?php echo $text_newsletter; ?></option>
+					<?php echo $option_all.$option_news; ?>
 				  </select>
 				</div>
 			  </div>
