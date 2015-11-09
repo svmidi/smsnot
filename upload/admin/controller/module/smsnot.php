@@ -78,6 +78,7 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['entry_api_key'] = $this->language->get('entry_api_key');
 		$this->data['entry_phone'] = $this->language->get('entry_phone');
 		$this->data['entry_balance'] = $this->language->get('entry_balance');
+		$this->data['entry_characters'] = $this->language->get('entry_characters');
 
 		$this->data['text_description'] = $this->language->get('text_description');
 		$this->data['text_newsletter'] = $this->language->get('text_newsletter');

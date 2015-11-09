@@ -16,6 +16,7 @@ $_['entry_message_template'] = 'Шаблон сообщения:';
 $_['entry_api_key']          = 'API key:';
 $_['entry_phone']            = 'Номер владельца магазина:';
 $_['entry_balance']          = 'Баланс:';
+$_['entry_characters']       = 'Количество символов:';
 
 $_['text_enable']           = 'Включено';
 $_['text_disable']          = 'Выключено';

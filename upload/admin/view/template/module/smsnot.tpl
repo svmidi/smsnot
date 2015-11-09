@@ -28,20 +28,18 @@
 	  		<div class="col-sm-6 text-right">
 	  			<div class="btn-group" role="group" aria-label="...">
 	  				<button type="button" class="btn btn-default" title="<?php echo $text_refresh; ?>"><?php echo $entry_balance; ?> <?php echo $balance; ?></button>
-	  				<a href="#" class="btn btn-success" title="<?php echo $text_money_add; ?>">+</a>
+	  				<a href="http://callme.sms.ru/pay.php" target="_blank" class="btn btn-success" title="<?php echo $text_money_add; ?>">+</a>
 	  			</div>
 	  		</div>
 	  	</div>
 	  </div>
 	  <div class="panel-body">
-	  	<pre>
 	  	<?php
 	  	foreach ($customer_groups as $value) {
 	  		$option_all='<option value="2'.$value['customer_group_id'].'">'.$text_all_group.' '.$value['name'].'</option>';
 	  		$option_news='<option value="3'.$value['customer_group_id'].'">'.$text_newsletter_group.' '.$value['name'].'</option>';
 	  	}
 	  	?>
-	  	</pre>
 		<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-smsnot" class="form-horizontal">
 		  <ul class="nav nav-tabs">
 			<li class="active"><a href="#tab-sending" data-toggle="tab"><?php echo $tab_sending; ?></a></li>
@@ -64,6 +62,11 @@
 			  <div class="form-group">
 				<label class="col-sm-2 control-label" for="input-message"><?php echo $entry_message; ?></label>
 				<div class="col-sm-10">
+					<div class="progress">
+					  <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+					</div>
+					<div><?php echo $entry_characters; ?> <span id="count">0</span></div>
+					<div>SMS: <span id="countSMS">1</span></div>
 					<textarea name="input-message" rows="5" placeholder="<?php echo $entry_message; ?>" id="input-message" class="form-control"></textarea>
 				</div>
 			  </div>
@@ -89,12 +92,12 @@
 					</select>
 				</div>
 			  </div>
-			    <div class="form-group">
+			<div class="form-group">
 			  	<label class="col-sm-2 control-label" for="input-message-template"><?php echo $entry_message_template; ?></label>
 			  	<div class="col-sm-10">
 			  		<textarea name="smsnot-message-template" rows="5" placeholder="<?php echo $entry_message_template; ?>" id="input-message-template" class="form-control"><?php echo $data['smsnot-message-template']; ?></textarea>
 			  	</div>
-			    </div>
+			</div>
 			  <div class="form-group">
 				<label class="col-sm-2 control-label"><?php echo $entry_to; ?></label>
 				<div class="col-sm-10">
@@ -145,13 +148,13 @@
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="input-phone"><?php echo $entry_phone; ?></label>
 					<div class="col-sm-10">
-					  <input name="smsnot-phone" type="number" placeholder="<?php echo $entry_phone; ?>" id="input-phone" class="form-control" value="<?php echo $data['smsnot-phone']; ?>">
+					  <input name="smsnot-phone" type="text" placeholder="<?php echo $entry_phone; ?>" id="input-phone" class="form-control digitOnly" value="<?php echo $data['smsnot-phone']; ?>" maxlength="11">
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="input-sender"><?php echo $entry_sender; ?></label>
 					<div class="col-sm-10">
-					  <input name="smsnot-sender" type="text" placeholder="<?php echo $entry_sender; ?>" id="input-sender" class="form-control" value="<?php echo $data['smsnot-sender']; ?>">
+					  <input name="smsnot-sender" type="text" placeholder="<?php echo $entry_sender; ?>" id="input-sender" class="form-control" value="<?php echo $data['smsnot-sender']; ?>" maxlength="12">
 					</div>
 				</div>
 				<div class="form-group">
@@ -170,6 +173,30 @@
 	  </div>
 	</div>
   </div>
-
+<script type="text/javascript">
+$( document ).ready(function() {
+	$("#input-message").keyup(function() {
+		if (/[а-я]/i.test($("#input-message").val()))
+			max=70;
+		else
+			max=140;
+		smsc=Math.ceil($("#input-message").val().length/max);
+		sm=max*(smsc-1);
+		var box=$(this).val();
+		var main = (box.length-sm) *100;
+		var value= (main / max);
+		$('#count').html(box.length);
+		$('.progress-bar').animate(
+		{
+			"width": value+'%',
+		}, 1);
+		$('#countSMS').html(smsc);
+		return false;
+	});
+	$(".digitOnly").keyup(function (){
+		$(this).val($(this).val().replace(/[^\d]/g, ''));
+	});
+});
+</script>
 </div>
 <?php echo $footer; ?>
