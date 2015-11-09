@@ -61,7 +61,7 @@ class ControllerModuleSmsnot extends Controller {
 		);
 		
 		$this->data['heading_title'] = $this->language->get('heading_title');
-		$this->data['button_save'] = $this->language->get('save_changes');
+		$this->data['button_save'] = $this->language->get('button_save');
 		$this->data['button_cancel'] = $this->language->get('button_cancel');
 		$this->data['button_test'] = $this->language->get('button_test');
 		$this->data['button_send'] = $this->language->get('button_send');
@@ -101,6 +101,7 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['cancel']         = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
 		$this->data['data']           = $this->model_setting_setting->getSetting('smsnot');
 		$this->data['balance']        = 0;
+		$this->data['token']          = $this->session->data['token'];
 		
 		if(strcmp(VERSION,"2.1.0.1") < 0) {
 			$this->load->model('sale/customer_group');
@@ -116,11 +117,6 @@ class ControllerModuleSmsnot extends Controller {
 		$this->response->setOutput($this->load->view('module/smsnot.tpl', $this->data));
 	}
 
-
-	public function testSend() {
-		
-	}
-	
 	public function install() {
 		$this->load->model('module/smsnot');
 		$this->model_module_smsnot->install();
@@ -146,7 +142,36 @@ class ControllerModuleSmsnot extends Controller {
 	}
 	
 	public function send() {
+		$json = array();
+		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+			if (!$this->user->hasPermission('modify', 'module/smsnot')) {
+				$json['error']['warning'] = 'You do not have permission to perform this action!';
+			}
+			if (!$this->request->post['message']) {
+				$json['error']['message'] = 'The message field should not be empty!';
+			}
+			if (!$json) {
+				$json['data']=$this->request->post;
+				$response=$this->sms_send($this->request->post['api'],$this->request->post['to'],$this->request->post['message'],$this->request->post['sender']);
+				$json['response']=$response;
+			}
+		}
 		$this->response->setOutput(json_encode($json));	
+	}
+
+	private function sms_send($api_id, $to, $text, $sender) {
+		$ch = curl_init("http://sms.ru/sms/send");
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, array(
+			"api_id"	=>	$api_id,
+			"to"		=>	$to,
+			"text"		=>	$text,
+			"from"		=>	$sender
+		));
+		$result = curl_exec($ch);
+		curl_close($ch);
+		return $result;
 	}
 }
 ?>

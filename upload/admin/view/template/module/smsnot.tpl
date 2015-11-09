@@ -162,7 +162,7 @@
 						
 					</div>
 					<div class="col-sm-6">
-						<button class="btn btn-default" id="test_send"><?php echo $button_test; ?></button>
+						<button class="btn btn-default" type="button" id="test_send"><?php echo $button_test; ?></button>
 					</div>
 				</div>
 
@@ -196,6 +196,28 @@ $( document ).ready(function() {
 	$(".digitOnly").keyup(function (){
 		$(this).val($(this).val().replace(/[^\d]/g, ''));
 	});
+
+	$("#test_send").click(function(){
+			var data="&sender="+$('#input-sender').val()+"&to="+$('#input-phone').val()+"&api="+$('#input-apikey').val()+"&message=test";
+			var btn = $(this);
+			btn.button('loading');
+			$.ajax({
+				type: "POST",
+				url: "index.php?route=module/smsnot/send&token=<?php echo $token; ?>",
+				cache: false,
+				data: data,
+				success: function(html){
+					alert(html);
+					var jsonData = JSON.parse(html);
+					if (jsonData['error']==1)
+						alert('error'+jsonData['text']);
+					else
+					{
+						btn.button('reset');
+					}
+				},
+			});
+		});
 });
 </script>
 </div>
