@@ -27,7 +27,7 @@
 	  		</div>
 	  		<div class="col-sm-6 text-right">
 	  			<div class="btn-group" role="group" aria-label="...">
-	  				<button type="button" class="btn btn-default" title="<?php echo $text_refresh; ?>"><?php echo $entry_balance; ?> <?php echo $balance; ?></button>
+	  				<button type="button" id="balance" class="btn btn-default" title="<?php echo $text_refresh; ?>"><?php echo $entry_balance; ?> <?php echo $balance; ?></button>
 	  				<a href="http://callme.sms.ru/pay.php" target="_blank" class="btn btn-success" title="<?php echo $text_money_add; ?>">+</a>
 	  			</div>
 	  		</div>
@@ -165,6 +165,7 @@
 						<button class="btn btn-default" type="button" id="test_send"><?php echo $button_test; ?></button>
 					</div>
 				</div>
+				<div id="result"></div>
 
 			</div>
 
@@ -207,12 +208,13 @@ $( document ).ready(function() {
 				cache: false,
 				data: data,
 				success: function(html){
-					alert(html);
 					var jsonData = JSON.parse(html);
-					if (jsonData['error']==1)
-						alert('error'+jsonData['text']);
+					if (jsonData['error'])
+						$('#result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
 					else
 					{
+						$('#result').html('<div class="alert alert-success">'+jsonData['text']+'</div>');
+						$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
 						btn.button('reset');
 					}
 				},

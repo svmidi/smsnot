@@ -145,18 +145,56 @@ class ControllerModuleSmsnot extends Controller {
 		$json = array();
 		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
 			if (!$this->user->hasPermission('modify', 'module/smsnot')) {
-				$json['error']['warning'] = 'You do not have permission to perform this action!';
+				$json['error'] = 403;
+				$json['text'] = 'You do not have permission to perform this action!';
 			}
 			if (!$this->request->post['message']) {
-				$json['error']['message'] = 'The message field should not be empty!';
+				$json['error'] = 404;
+				$json['message'] = 'The message field should not be empty!';
 			}
 			if (!$json) {
-				$json['data']=$this->request->post;
 				$response=$this->sms_send($this->request->post['api'],$this->request->post['to'],$this->request->post['message'],$this->request->post['sender']);
-				$json['response']=$response;
+				$json=$response;
 			}
 		}
-		$this->response->setOutput(json_encode($json));	
+		$this->response->setOutput(json_encode($json));
+	}
+	private function read_response($response){
+		$this->load->language('module/smsnot');
+		$error_array=array(
+		100 =>"Сообщение принято к отправке.",
+		200 =>"Неправильный api_id",
+		201 =>"Не хватает средств на лицевом счету",
+		202 =>"Неправильно указан получатель",
+		203 =>"Нет текста сообщения",
+		204 =>"Имя отправителя не согласовано с администрацией",
+		205 =>"Сообщение слишком длинное (превышает 8 СМС)",
+		206 =>"Будет превышен или уже превышен дневной лимит на отправку сообщений",
+		207 =>"На этот номер (или один из номеров) нельзя отправлять сообщения, либо указано более 100 номеров в списке получателей",
+		208 =>"Параметр time указан неправильно",
+		209 =>"Вы добавили этот номер (или один из номеров) в стоп-лист",
+		210 =>"Используется GET, где необходимо использовать POST",
+		211 =>"Метод не найден",
+		212 =>"Текст сообщения необходимо передать в кодировке UTF-8 (вы передали в другой кодировке)",
+		220 =>"Сервис временно недоступен, попробуйте чуть позже.",
+		230 =>"Сообщение не принято к отправке, так как на один номер в день нельзя отправлять более 60 сообщений.",
+		300 =>"Неправильный token (возможно истек срок действия, либо ваш IP изменился)",
+		301 =>"Неправильный пароль, либо пользователь не найден",
+		302 =>"Пользователь авторизован, но аккаунт не подтвержден (пользователь не ввел код, присланный в регистрационной смс)");
+		$ex = explode("\n", $response);
+		$result=array();
+		if ($ex[0]==100) {
+			$balance=explode("=", $ex[2]);
+			$result['error'] = 0;
+			$result['balance'] = $balance[1];
+			$result['text'] = $this->language->get('text_send_success');
+		}
+		else {
+			$result['error']=$ex[0];
+			$result['text'] = $this->language->get('text_send_error').' ('.$error_array[$ex[1]].')';
+			
+		}
+		return $result;
 	}
 
 	private function sms_send($api_id, $to, $text, $sender) {
@@ -171,7 +209,7 @@ class ControllerModuleSmsnot extends Controller {
 		));
 		$result = curl_exec($ch);
 		curl_close($ch);
-		return $result;
+		return $this->read_response($result);
 	}
 }
 ?>
