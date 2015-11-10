@@ -102,6 +102,12 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['data']           = $this->model_setting_setting->getSetting('smsnot');
 		$this->data['balance']        = 0;
 		$this->data['token']          = $this->session->data['token'];
+
+		if ($this->data['data']['smsnot-apikey']!='')
+		{
+			$balance = $this->get_balance($this->data['data']['smsnot-apikey']);
+			$this->data['balance'] = (in_array('balance', $balance))?$balance['balance']:'-';
+		}
 		
 		if(strcmp(VERSION,"2.1.0.1") < 0) {
 			$this->load->model('sale/customer_group');
@@ -159,6 +165,29 @@ class ControllerModuleSmsnot extends Controller {
 		}
 		$this->response->setOutput(json_encode($json));
 	}
+
+	public function balance(){
+		if (!$this->user->hasPermission('modify', 'module/smsnot')) {
+			$json['error'] = 403;
+			$json['text'] = 'You do not have permission to perform this action!';
+		}
+		else
+		{
+			$json['error']=12;
+			$api_key=(isset($this->request->post['api']))?$this->request->post['api']:$api_key;
+			if ($api_key=='')
+			{
+				$this->load->model('setting/setting');
+				$settings = $this->model_setting_setting->getSetting('smsnot');
+				$api_key = $settings['smsnot-apikey'];
+			}
+			if ($api_key!='') {
+				$json=$this->get_balance($api_key);
+			}
+			$this->response->setOutput(json_encode($json));
+		}
+	}
+
 	private function read_response($response){
 		$this->load->language('module/smsnot');
 		$error_array=array(
@@ -207,7 +236,7 @@ class ControllerModuleSmsnot extends Controller {
 		else
 			$param=array("api_id" => $api_id);
 		$ch = curl_init("http://sms.ru/sms/send");
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $para);
 		$result = curl_exec($ch);
@@ -215,41 +244,24 @@ class ControllerModuleSmsnot extends Controller {
 		return $this->read_response($result);
 	}
 
-	public function balance($api_key='') {
-		if (!$this->user->hasPermission('modify', 'module/smsnot')) {
-			$json['error'] = 403;
-			$json['text'] = 'You do not have permission to perform this action!';
-		}
+	private function get_balance($api_key='') {
+		$ch = curl_init("http://sms.ru/my/balance");
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, array(
+			"api_id"	=>	$api_key
+		));
+		$response = curl_exec($ch);
+		curl_close($ch);
+		$ex = explode("\n", $response);
+		if (count($ex)==1)
+			$json['error']=$response;
 		else
 		{
-			$json['error']=12;
-			$api_key=(isset($this->request->post['api']))?$this->request->post['api']:$api_key;
-			if ($api_key=='')
-			{
-				$this->load->model('setting/setting');
-				$settings = $this->model_setting_setting->getSetting('smsnot');
-				$api_key = $settings['smsnot-apikey'];
-			}
-			if ($api_key!='') {
-				$ch = curl_init("http://sms.ru/my/balance");
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-				curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-				curl_setopt($ch, CURLOPT_POSTFIELDS, array(
-					"api_id"	=>	$api_key
-				));
-				$response = curl_exec($ch);
-				curl_close($ch);
-				$ex = explode("\n", $response);
-				if (count($ex)==1)
-					$json['error']=$response;
-				else
-				{
-					$json['error']=0;
-					$json['balance']=$ex[1];
-				}
-			}
+			$json['error']=0;
+			$json['balance']=$ex[1];
 		}
-		$this->response->setOutput(json_encode($json));
+		return $json;
 	}
 }
 ?>
