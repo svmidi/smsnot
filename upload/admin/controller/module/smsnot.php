@@ -226,18 +226,15 @@ class ControllerModuleSmsnot extends Controller {
 	}
 
 	private function sms_send($api_id, $to=0, $text=0, $sender='') {
-		if ((!$to)OR(!$text))
 			$param=array(
 			"api_id"	=>	$api_id,
 			"to"		=>	$to,
 			"text"		=>	$text,
 			"from"		=>	$sender);
-		else
-			$param=array("api_id" => $api_id);
 		$ch = curl_init("http://sms.ru/sms/send");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $para);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
 		$result = curl_exec($ch);
 		curl_close($ch);
 		return $this->read_response($result);
