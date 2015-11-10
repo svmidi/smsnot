@@ -2,32 +2,49 @@
 class ControllerModuleSmsnot extends Controller {
 	private $data = array();
 
-	public function index() { 
+	private $error_array=array(
+		100 =>"Сообщение принято к отправке.",
+		200 =>"Неправильный api_id",
+		201 =>"Не хватает средств на лицевом счету",
+		202 =>"Неправильно указан получатель",
+		203 =>"Нет текста сообщения",
+		204 =>"Имя отправителя не согласовано с администрацией",
+		205 =>"Сообщение слишком длинное (превышает 8 СМС)",
+		206 =>"Будет превышен или уже превышен дневной лимит на отправку сообщений",
+		207 =>"На этот номер (или один из номеров) нельзя отправлять сообщения, либо указано более 100 номеров в списке получателей",
+		208 =>"Параметр time указан неправильно",
+		209 =>"Вы добавили этот номер (или один из номеров) в стоп-лист",
+		210 =>"Используется GET, где необходимо использовать POST",
+		211 =>"Метод не найден",
+		212 =>"Текст сообщения необходимо передать в кодировке UTF-8 (вы передали в другой кодировке)",
+		220 =>"Сервис временно недоступен, попробуйте чуть позже.",
+		230 =>"Сообщение не принято к отправке, так как на один номер в день нельзя отправлять более 60 сообщений.",
+		300 =>"Неправильный token (возможно истек срок действия, либо ваш IP изменился)",
+		301 =>"Неправильный пароль, либо пользователь не найден",
+		302 =>"Пользователь авторизован, но аккаунт не подтвержден (пользователь не ввел код, присланный в регистрационной смс)");
+
+	public function index() {
 
 		$this->load->language('module/smsnot');
-		
 		$this->load->model('module/smsnot');
-		$this->load->model('setting/store');
 		$this->load->model('localisation/language');
 		$this->load->model('setting/setting');
-		
+
 		$this->document->setTitle($this->language->get('heading_title'));
 
 		if(!isset($this->request->get['store_id'])) {
 			$this->request->get['store_id'] = 0; 
 		}
-	
-		//$store = $this->getCurrentStore($this->request->get['store_id']);
-		
-		if (($this->request->server['REQUEST_METHOD'] == 'POST')) { 	
+
+		if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
 			if (!$this->user->hasPermission('modify', 'module/smsnot')) {
 				$this->error['warning'] = $this->language->get('error_permission');
-				$this->session->data['error'] = 'You do not have permissions to edit this module!';	
+				$this->session->data['error'] = 'You do not have permissions to edit this module!';
 			} else {
 				$this->model_setting_setting->editSetting('smsnot', $this->request->post, 0);
 				$this->session->data['success'] = $this->language->get('text_success');
 			}
-			$this->response->redirect(HTTP_SERVER.'index.php?route=module/smsnot&store_id='.$this->request->post['store_id'] . '&token=' . $this->session->data['token']);
+			$this->response->redirect(HTTP_SERVER.'index.php?route=module/smsnot&store_id='.$this->request->get['store_id'] . '&token=' . $this->session->data['token']);
 		}
 
 		if (isset($this->session->data['success'])) {
@@ -94,9 +111,7 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['text_money_add'] = $this->language->get('text_money_add');
 		$this->data['text_refresh'] = $this->language->get('text_refresh');
 
-		$this->data['stores'] = array_merge(array(0 => array('store_id' => '0', 'name' => $this->config->get('config_name') . ' ' . $this->data['text_default'], 'url' => HTTP_SERVER, 'ssl' => HTTPS_SERVER)), $this->model_setting_store->getStores());
-
-		$this->data['error_warning']  = '';  
+		$this->data['error_warning']  = '';
 		$this->data['action']         = $this->url->link('module/smsnot', 'token=' . $this->session->data['token'], 'SSL');
 		$this->data['cancel']         = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
 		$this->data['data']           = $this->model_setting_setting->getSetting('smsnot');
@@ -131,7 +146,6 @@ class ControllerModuleSmsnot extends Controller {
 		$this->model_extension_event->addEvent('smsnot', 'post.order.history.add', 'module/smsnot/onHistoryChange');
 	}
 
-	
 	public function uninstall() {
 		$this->load->model('setting/setting');
 		
@@ -146,7 +160,7 @@ class ControllerModuleSmsnot extends Controller {
 		$this->load->model('extension/event');
 		$this->model_extension_event->deleteEvent('smsnot');
 	}
-	
+
 	public function send() {
 		$json = array();
 		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
@@ -190,26 +204,6 @@ class ControllerModuleSmsnot extends Controller {
 
 	private function read_response($response){
 		$this->load->language('module/smsnot');
-		$error_array=array(
-		100 =>"Сообщение принято к отправке.",
-		200 =>"Неправильный api_id",
-		201 =>"Не хватает средств на лицевом счету",
-		202 =>"Неправильно указан получатель",
-		203 =>"Нет текста сообщения",
-		204 =>"Имя отправителя не согласовано с администрацией",
-		205 =>"Сообщение слишком длинное (превышает 8 СМС)",
-		206 =>"Будет превышен или уже превышен дневной лимит на отправку сообщений",
-		207 =>"На этот номер (или один из номеров) нельзя отправлять сообщения, либо указано более 100 номеров в списке получателей",
-		208 =>"Параметр time указан неправильно",
-		209 =>"Вы добавили этот номер (или один из номеров) в стоп-лист",
-		210 =>"Используется GET, где необходимо использовать POST",
-		211 =>"Метод не найден",
-		212 =>"Текст сообщения необходимо передать в кодировке UTF-8 (вы передали в другой кодировке)",
-		220 =>"Сервис временно недоступен, попробуйте чуть позже.",
-		230 =>"Сообщение не принято к отправке, так как на один номер в день нельзя отправлять более 60 сообщений.",
-		300 =>"Неправильный token (возможно истек срок действия, либо ваш IP изменился)",
-		301 =>"Неправильный пароль, либо пользователь не найден",
-		302 =>"Пользователь авторизован, но аккаунт не подтвержден (пользователь не ввел код, присланный в регистрационной смс)");
 		$ex = explode("\n", $response);
 		$result=array();
 		if ($ex[0]==100) {
@@ -220,7 +214,7 @@ class ControllerModuleSmsnot extends Controller {
 		}
 		else {
 			$result['error'] = $ex[0];
-			$result['text'] = $this->language->get('text_send_error').' ('.$error_array[$ex[1]].')';
+			$result['text'] = $this->language->get('text_send_error').' ('.$this->error_array[$ex[0]].')';
 		}
 		return $result;
 	}
@@ -250,8 +244,10 @@ class ControllerModuleSmsnot extends Controller {
 		$response = curl_exec($ch);
 		curl_close($ch);
 		$ex = explode("\n", $response);
-		if (count($ex) == 1)
+		if (count($ex) == 1) {
 			$json['error'] = $response;
+			$json['text'] = $this->error_array[$response];
+		}
 		else
 		{
 			$json['error'] = 0;
