@@ -14,14 +14,15 @@ class ControllerModuleSmsnot extends Controller {
 					$response=$this->sms_send($setting['smsnot-apikey'], $setting['smsnot-phone'], $message, $setting['sender']);
 			}
 		}
-    }
+	}
 
-    private function sms_send($api_id, $to=0, $text=0, $sender='') {
+	private function sms_send($api_id, $to=0, $text=0, $sender='') {
 		$param=array(
-		"api_id"	=>	$api_id,
-		"to"		=>	$to,
-		"text"		=>	$text,
-		"from"		=>	$sender);
+		"api_id"      => $api_id,
+		"to"          => $to,
+		"text"        => $text,
+		"from"        => $sender,
+		"partner_id"  => 34316);
 		$ch = curl_init("http://sms.ru/sms/send");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);

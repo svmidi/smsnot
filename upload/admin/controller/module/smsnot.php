@@ -82,6 +82,7 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['button_cancel'] = $this->language->get('button_cancel');
 		$this->data['button_test'] = $this->language->get('button_test');
 		$this->data['button_send'] = $this->language->get('button_send');
+		$this->data['button_refer'] = $this->language->get('button_refer');
 
 		$this->data['tab_sending'] = $this->language->get('tab_sending');
 		$this->data['tab_notice'] = $this->language->get('tab_notice');
@@ -220,11 +221,12 @@ class ControllerModuleSmsnot extends Controller {
 	}
 
 	private function sms_send($api_id, $to=0, $text=0, $sender='') {
-			$param=array(
-			"api_id"	=>	$api_id,
-			"to"		=>	$to,
-			"text"		=>	$text,
-			"from"		=>	$sender);
+		$param=array(
+		"api_id"		=>	$api_id,
+		"to"			=>	$to,
+		"text"			=>	$text,
+		"from"			=>	$sender,
+		"partner_id"	=> 34316);
 		$ch = curl_init("http://sms.ru/sms/send");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);

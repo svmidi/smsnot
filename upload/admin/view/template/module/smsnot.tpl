@@ -159,7 +159,7 @@
 				</div>
 				<div class="form-group">
 					<div class="col-sm-6 text-right">
-						<a href="#" class="btn btn-success"><?php echo $button_refer; ?></a>
+						<a href="http://svmidi.sms.ru/" target="_blank" class="btn btn-success"><?php echo $button_refer; ?></a>
 					</div>
 					<div class="col-sm-6">
 						<button class="btn btn-default" type="button" id="test_send"><?php echo $button_test; ?></button>
