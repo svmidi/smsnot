@@ -199,27 +199,47 @@ $( document ).ready(function() {
 	});
 
 	$("#test_send").click(function(){
-			var data="&sender="+$('#input-sender').val()+"&to="+$('#input-phone').val()+"&api="+$('#input-apikey').val()+"&message=test";
-			var btn = $(this);
-			btn.button('loading');
-			$.ajax({
-				type: "POST",
-				url: "index.php?route=module/smsnot/send&token=<?php echo $token; ?>",
-				cache: false,
-				data: data,
-				success: function(html){
-					var jsonData = JSON.parse(html);
-					if (jsonData['error'])
-						$('#result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
-					else
-					{
-						$('#result').html('<div class="alert alert-success">'+jsonData['text']+'</div>');
-						$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
-						btn.button('reset');
-					}
-				},
-			});
+		var data="&sender="+$('#input-sender').val()+"&to="+$('#input-phone').val()+"&api="+$('#input-apikey').val()+"&message=test";
+		var btn = $(this);
+		btn.button('loading');
+		$.ajax({
+			type: "POST",
+			url: "index.php?route=module/smsnot/send&token=<?php echo $token; ?>",
+			cache: false,
+			data: data,
+			success: function(html){
+				var jsonData = JSON.parse(html);
+				if (jsonData['error'])
+					$('#result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
+				else
+				{
+					$('#result').html('<div class="alert alert-success">'+jsonData['text']+'</div>');
+					$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
+					btn.button('reset');
+				}
+			},
 		});
+	});
+
+	$("#balance").click(function(){
+		var data="&api="+$('#input-apikey').val();
+		var btn = $(this);
+		$.ajax({
+			type: "POST",
+			url: "index.php?route=module/smsnot/balance&token=<?php echo $token; ?>",
+			cache: false,
+			data: data,
+			success: function(html){
+				var jsonData = JSON.parse(html);
+				if (jsonData['error'])
+					$('#result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
+				else
+				{
+					$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
+				}
+			},
+		});
+	});
 });
 </script>
 </div>
