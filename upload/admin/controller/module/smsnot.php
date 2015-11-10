@@ -219,9 +219,8 @@ class ControllerModuleSmsnot extends Controller {
 			$result['text'] = $this->language->get('text_send_success');
 		}
 		else {
-			$result['error']=$ex[0];
+			$result['error'] = $ex[0];
 			$result['text'] = $this->language->get('text_send_error').' ('.$error_array[$ex[1]].')';
-			
 		}
 		return $result;
 	}
@@ -254,12 +253,12 @@ class ControllerModuleSmsnot extends Controller {
 		$response = curl_exec($ch);
 		curl_close($ch);
 		$ex = explode("\n", $response);
-		if (count($ex)==1)
-			$json['error']=$response;
+		if (count($ex) == 1)
+			$json['error'] = $response;
 		else
 		{
-			$json['error']=0;
-			$json['balance']=$ex[1];
+			$json['error'] = 0;
+			$json['balance'] = $ex[1];
 		}
 		return $json;
 	}

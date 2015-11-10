@@ -83,11 +83,11 @@
 				<div class="col-sm-10">
 					<select name="smsnot-enabled" class="form-control">
 						<?php if ($data['smsnot-enabled']) { ?>
-						<option value="<?php echo $enabled; ?>" selected="selected"><?php echo $text_enable; ?></option>
-						<option value="<?php echo $enabled; ?>"><?php echo $text_disable; ?></option>
+						<option value="1" selected="selected"><?php echo $text_enable; ?></option>
+						<option value="0"><?php echo $text_disable; ?></option>
 						<?php } else { ?>
-						<option value="<?php echo $enabled; ?>"><?php echo $text_enable; ?></option>
-						<option value="<?php echo $enabled; ?>" selected="selected"><?php echo $text_disable; ?></option>
+						<option value="1"><?php echo $text_enable; ?></option>
+						<option value="0" selected="selected"><?php echo $text_disable; ?></option>
 						<?php } ?>
 					</select>
 				</div>
