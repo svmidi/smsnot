@@ -8,13 +8,21 @@ class ControllerModuleSmsnot extends Controller {
 		$this->load->model('setting/setting');
 		$setting = $this->model_setting_setting->getSetting('smsnot');
 
-		if(isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey'])) && ($setting['smsnot-owner'] == 'on')) {
+		if(isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey']))) {
 			if (!$order_info['order_status_id']) {
+				if ($setting['smsnot-owner'] == 'on') {
 					$message = 'New order '.$order_id.', in store '.$this->config->get('config_name').'. Total: '.$order_info['total'];
-					$response=$this->sms_send($setting['smsnot-apikey'], $setting['smsnot-phone'], $message, $setting['smsnot-sender']);
+					$this->sms_send($setting['smsnot-apikey'], $setting['smsnot-phone'], $message, $setting['smsnot-sender']);
+				} elseif ($setting['smsnot-new-order'] == 'on') {
+					$original = array("{StoreName}","{OrderID}");
+					$replace = array($this->config->get('config_name'), $order_id);
+
+					$message = str_replace($original, $replace, $setting['smsnot-message-customer']);
+					$this->sms_send($setting['smsnot-apikey'], $setting['smsnot-phone'], $message, $setting['smsnot-sender']);
+				}
 			}
 		}
-	}
+    }
 
 	public function onHistoryChange($order_id) {
 		$this->load->model('checkout/order');
