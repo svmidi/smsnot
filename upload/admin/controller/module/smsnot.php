@@ -193,8 +193,8 @@ class ControllerModuleSmsnot extends Controller {
 				$json['message'] = 'The message field should not be empty!';
 			}
 			if (!$json) {
-				$response=$this->sms_send($this->request->post['api'],$this->request->post['to'],$this->request->post['message'],$this->request->post['sender']);
-				$json=$response;
+				$response = $this->sms_send($this->request->post['api'],$this->request->post['to'],$this->request->post['message'],$this->request->post['sender']);
+				$json = $response;
 			}
 		}
 		$this->response->setOutput(json_encode($json));
@@ -217,6 +217,60 @@ class ControllerModuleSmsnot extends Controller {
 			}
 			$this->response->setOutput(json_encode($json));
 		}
+	}
+
+	public function massend() {
+		$this->load->model('module/smsnot');
+		$this->load->model('setting/setting');
+		$settings = $this->model_setting_setting->getSetting('smsnot');
+		$json = array();
+		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+			if (!$this->user->hasPermission('modify', 'module/smsnot')) {
+				$json['error'] = 403;
+				$json['text'] = 'You do not have permission to perform this action!';
+			}
+			if (!$this->request->post['message']) {
+				$json['error'] = 404;
+				$json['message'] = 'The message field should not be empty!';
+			}
+			if (!$json) {
+				$filter = array();
+				if (($this->request->post['to'] > 10) AND ($this->request->post['to'] < 100)) {
+					$group = $this->request->post['to'] % 10;
+					$type = intval($this->request->post['to'] / 10);
+					$filter['filter_group'] = $group;
+				} elseif ($this->request->post['to'] > 100) {
+					$group = $this->request->post['to'] % 100;
+					$type = intval($this->request->post['to'] / 100);
+					$filter['filter_group'] = $group;
+				}
+				if ($type == 3)
+					$filter['filter_newsletter'] = 1;
+				if ($this->request->post['to'] == 1)
+					$filter['filter_newsletter'] = 1;
+
+				//$total = $this->model_module_smsnot->getTotalCustomers($filter);
+				$customers = $this->model_module_smsnot->getPhones($filter);
+				$query = '';
+				$i = 0;
+				foreach ($customers as $customer) {
+					if (preg_match('/(\+|)[0-9]{11}/', $customer['telephone'])) {
+						$i++;
+						$original = array("{StoreName}", "{Name}", "{LastName}");
+						$replace = array($this->config->get('config_name'), $customer['firstname'], $customer['lastname']);
+						$message = str_replace($original, $replace, $this->request->post['message']);
+						$query.='&multi['.$customer['telephone'].']='.$message;
+						if ($i>99) {
+							$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot_sender']);
+							$query = '';
+							$i = 0;
+						}
+					}
+				}
+				$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot_sender']);
+			}
+		}
+		$this->response->setOutput(json_encode($json));
 	}
 
 	private function read_response($response){
@@ -242,6 +296,22 @@ class ControllerModuleSmsnot extends Controller {
 		"text"			=>	$text,
 		"from"			=>	$sender,
 		"partner_id"	=> 34316);
+		$ch = curl_init("http://sms.ru/sms/send");
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
+		$result = curl_exec($ch);
+		curl_close($ch);
+		return $this->read_response($result);
+	}
+
+	private function sms_multisend($api_id, $text, $sender='') {
+		$param = array(
+		"api_id"		=>	$api_id,
+		"multi"			=>	$text,
+		"from"			=>	$sender,
+		"partner_id"	=> 34316,
+		"test" =>1);
 		$ch = curl_init("http://sms.ru/sms/send");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
