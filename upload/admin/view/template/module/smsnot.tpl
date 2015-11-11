@@ -61,7 +61,9 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label" for="input-message"><?php echo $entry_message; ?></label>
+					<label class="col-sm-2 control-label" for="input-message">
+						<span data-toggle="tooltip" data-original-title="<?php echo $help_message; ?>"><?php echo $entry_message; ?></span>
+					</label>
 					<div class="col-sm-10">
 						<div class="progress">
 						  <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
@@ -73,9 +75,10 @@
 				</div>
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
-						<button class="btn btn-default" id="send"><?php echo $button_send; ?></button>
+						<button class="btn btn-default" type="button" id="send"><?php echo $button_send; ?></button>
 					</div>
 				</div>
+				<div id="multi-result"></div>
 			</div>
 
 			<div class="tab-pane fade" id="tab-notice">
@@ -252,6 +255,29 @@ $( document ).ready(function() {
 				else
 				{
 					$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
+				}
+			},
+		});
+	});
+
+	$("#send").click(function(){
+		var data="&sender="+$('#input-sender').val()+"&api="+$('#input-apikey').val()+"&message="+$('#input-message').val()+"&to="+$('#input-to').val();
+		var btn = $(this);
+		btn.button('loading');
+		$.ajax({
+			type: "POST",
+			url: "index.php?route=module/smsnot/massend&token=<?php echo $token; ?>",
+			cache: false,
+			data: data,
+			success: function(html){
+				var jsonData = JSON.parse(html);
+				if (jsonData['error'])
+					$('#multi-result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
+				else
+				{
+					$('#multi-result').html('<div class="alert alert-success">'+jsonData['text']+'</div>');
+					$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
+					btn.button('reset');
 				}
 			},
 		});
