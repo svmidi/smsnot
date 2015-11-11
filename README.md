@@ -1,8 +1,6 @@
 # smsnot
 The module sending SMS notifications for OpenCart 2.x
 
-# sMenu - simple menu for OpenCart 2.x
-
 Description
 ===========
 The module allows you to send SMS text messages to customers and store owner built on OpenCart 2.x. Sending messages is done through service sms.ru.  
@@ -45,4 +43,4 @@ Install
 2. В администратоивной части сайта перейди в **Система -> Пользователи -> Группа пользователей -> Administrator**.
 3. Отметье **module/smsnot** в разделе "Разрешён просмотр" и **module/smsnot** в разделе "Разрешено внесение изменений" и сохраните изменения.
 4. Перейдите в **Модули -> Модули** и нажмите кнопку "Активировать" напротив "Smsnot for SMS.RU".
-5. Теперь вы можете зайти в настройки моделя и произвести необходимые настройки.
+5. Теперь вы можете зайти в настройки модуля и произвести необходимые настройки.
