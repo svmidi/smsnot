@@ -11,14 +11,19 @@ class ControllerModuleSmsnot extends Controller {
 		if(isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey']))) {
 			if (!$order_info['order_status_id']) {
 				if ($setting['smsnot-owner'] == 'on') {
-					$message = 'New order '.$order_id.', in store '.$this->config->get('config_name').'. Total: '.$order_info['total'];
+					$original = array("{StoreName}","{OrderID}", "{Total}");
+					$replace = array($this->config->get('config_name'), $order_id, $order_info['total']);
+
+					$message = str_replace($original, $replace, $setting['smsnot-message-customer']);
 					$this->sms_send($setting['smsnot-apikey'], $setting['smsnot-phone'], $message, $setting['smsnot-sender']);
 				} elseif ($setting['smsnot-new-order'] == 'on') {
 					$original = array("{StoreName}","{OrderID}");
 					$replace = array($this->config->get('config_name'), $order_id);
 
 					$message = str_replace($original, $replace, $setting['smsnot-message-customer']);
-					$this->sms_send($setting['smsnot-apikey'], $setting['smsnot-phone'], $message, $setting['smsnot-sender']);
+					if (preg_match('/(\+|)[0-9]{11}/', $order_info['telephone'])) {
+						$this->sms_send($setting['smsnot-apikey'], $order_info['smsnot-phone'], $message, $setting['smsnot-sender']);
+					}
 				}
 			}
 		}
@@ -48,13 +53,13 @@ class ControllerModuleSmsnot extends Controller {
 		}
 	}
 
-	private function sms_send($api_id, $to=0, $text=0, $sender='') {
+    private function sms_send($api_id, $to=0, $text=0, $sender='') {
 		$param=array(
-		"api_id"      => $api_id,
-		"to"          => $to,
-		"text"        => $text,
-		"from"        => $sender,
-		"partner_id"  => 34316);
+		"api_id"	 =>	$api_id,
+		"to"		 =>	$to,
+		"text"		 =>	$text,
+		"from"		 =>	$sender,
+		"partner_id" => 34316);
 		$ch = curl_init("http://sms.ru/sms/send");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
