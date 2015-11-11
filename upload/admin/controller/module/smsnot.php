@@ -2,7 +2,7 @@
 class ControllerModuleSmsnot extends Controller {
 	private $data = array();
 
-	private $error_array=array(
+	private $error_array = array(
 		100 =>"Сообщение принято к отправке.",
 		200 =>"Неправильный api_id",
 		201 =>"Не хватает средств на лицевом счету",
@@ -126,8 +126,7 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['balance']        = 0;
 		$this->data['token']          = $this->session->data['token'];
 
-		if ($this->data['data']['smsnot-apikey']!='')
-		{
+		if ($this->data['data']['smsnot-apikey']!='') {
 			$balance = $this->get_balance($this->data['data']['smsnot-apikey']);
 			$this->data['balance'] = (in_array('balance', $balance))?$balance['balance']:'-';
 		}
@@ -152,6 +151,19 @@ class ControllerModuleSmsnot extends Controller {
 		$this->load->model('extension/event');
 		$this->model_extension_event->addEvent('smsnot', 'pre.order.history.add', 'module/smsnot/onCheckout');
 		$this->model_extension_event->addEvent('smsnot', 'post.order.history.add', 'module/smsnot/onHistoryChange');
+		$this->load->model('setting/setting');
+		$basic=array(
+		'smsnot-sender'=>'',
+		'smsnot-phone'=>'',
+		'smsnot-owner'=>'',
+		'smsnot-apikey'=>'',
+		'smsnot-order-change'=>'',
+		'smsnot-message-template'=>'Order №{OrderID} in {StoreName}, changed status to {Status}',
+		'smsnot-message-customer'=>'New order №{OrderID} in {StoreName}',
+		'smsnot-message-admin'=>'New order #{OrderID} at the store "{StoreName}". Total {Total}',
+		'smsnot-new-order'=>'',
+		'smsnot-enabled'=>0);
+		$this->model_setting_setting->editSetting('smsnot', $basic, 0);
 	}
 
 	public function uninstall() {
@@ -192,18 +204,15 @@ class ControllerModuleSmsnot extends Controller {
 		if (!$this->user->hasPermission('modify', 'module/smsnot')) {
 			$json['error'] = 403;
 			$json['text'] = 'You do not have permission to perform this action!';
-		}
-		else
-		{
-			$json['error']=12;
+		} else {
+			$json['error'] = 12;
 			$api_key=(isset($this->request->post['api']))?$this->request->post['api']:$api_key;
-			if ($api_key=='')
-			{
+			if ($api_key == '') {
 				$this->load->model('setting/setting');
 				$settings = $this->model_setting_setting->getSetting('smsnot');
 				$api_key = $settings['smsnot-apikey'];
 			}
-			if ($api_key!='') {
+			if ($api_key != '') {
 				$json=$this->get_balance($api_key);
 			}
 			$this->response->setOutput(json_encode($json));
@@ -214,13 +223,12 @@ class ControllerModuleSmsnot extends Controller {
 		$this->load->language('module/smsnot');
 		$ex = explode("\n", $response);
 		$result=array();
-		if ($ex[0]==100) {
+		if ($ex[0] == 100) {
 			$balance=explode("=", $ex[2]);
 			$result['error'] = 0;
 			$result['balance'] = $balance[1];
 			$result['text'] = $this->language->get('text_send_success');
-		}
-		else {
+		} else {
 			$result['error'] = $ex[0];
 			$result['text'] = $this->language->get('text_send_error').' ('.$this->error_array[$ex[0]].')';
 		}
@@ -228,7 +236,7 @@ class ControllerModuleSmsnot extends Controller {
 	}
 
 	private function sms_send($api_id, $to=0, $text=0, $sender='') {
-		$param=array(
+		$param = array(
 		"api_id"		=>	$api_id,
 		"to"			=>	$to,
 		"text"			=>	$text,
@@ -256,9 +264,7 @@ class ControllerModuleSmsnot extends Controller {
 		if (count($ex) == 1) {
 			$json['error'] = $response;
 			$json['text'] = $this->error_array[$response];
-		}
-		else
-		{
+		} else {
 			$json['error'] = 0;
 			$json['balance'] = $ex[1];
 		}
