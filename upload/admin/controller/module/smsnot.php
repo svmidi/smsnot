@@ -117,6 +117,7 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['help_message_template'] = $this->language->get('help_message_template');
 		$this->data['help_message_customer'] = $this->language->get('help_message_customer');
 		$this->data['help_message_admin'] = $this->language->get('help_message_admin');
+		$this->data['help_message'] = $this->language->get('help_message');
 
 
 		$this->data['error_warning']  = '';
@@ -249,7 +250,6 @@ class ControllerModuleSmsnot extends Controller {
 				if ($this->request->post['to'] == 1)
 					$filter['filter_newsletter'] = 1;
 
-				//$total = $this->model_module_smsnot->getTotalCustomers($filter);
 				$customers = $this->model_module_smsnot->getPhones($filter);
 				$query = '';
 				$i = 0;

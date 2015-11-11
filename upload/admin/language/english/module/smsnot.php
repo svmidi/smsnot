@@ -41,4 +41,5 @@ $_['text_send_error']        = 'Error sending';
 $_['help_message_template'] = 'The message that customer will get a change order status. {OrderID} - order id, {Status} - order status, {StoreName} - store name.';
 $_['help_message_customer'] = 'The message that will get the customer to create a new order. {OrderID} - order id, {StoreName} - store name.';
 $_['help_message_admin']    = 'The message that will get the owner to create a new order. {OrderID} - order id, {StoreName} - store name, {Total} - order price.';
+$_['help_message']          = 'The message. {Name} - first name, {LastName} - last name, {StoreName} - store name.';
 ?>
