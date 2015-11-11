@@ -94,9 +94,27 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label" for="input-message-template"><?php echo $entry_message_template; ?></label>
+					<label class="col-sm-2 control-label" for="input-message-template">
+						<span data-toggle="tooltip" data-original-title="<?php echo $help_message_template; ?>"><?php echo $entry_message_template; ?></span>
+					</label>
 					<div class="col-sm-10">
 						<textarea name="smsnot-message-template" rows="5" placeholder="<?php echo $entry_message_template; ?>" id="input-message-template" class="form-control"><?php echo $data['smsnot-message-template']; ?></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label" for="input-message-customer">
+						<span data-toggle="tooltip" data-original-title="<?php echo $help_message_customer; ?>"><?php echo $entry_message_customer; ?></span>
+					</label>
+					<div class="col-sm-10">
+						<textarea name="smsnot-message-customer" rows="5" placeholder="<?php echo $entry_message_customer; ?>" id="input-message-customer" class="form-control"><?php echo $data['smsnot-message-customer']; ?></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label" for="input-message-admin">
+						<span data-toggle="tooltip" data-original-title="<?php echo $help_message_admin; ?>"><?php echo $entry_message_admin; ?></span>
+					</label>
+					<div class="col-sm-10">
+						<textarea name="smsnot-message-admin" rows="5" placeholder="<?php echo $entry_message_admin; ?>" id="input-message-admin" class="form-control"><?php echo $data['smsnot-message-admin']; ?></textarea>
 					</div>
 				</div>
 				<div class="form-group">

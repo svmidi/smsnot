@@ -93,6 +93,8 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['entry_message'] = $this->language->get('entry_message');
 		$this->data['entry_enabled'] = $this->language->get('entry_enabled');
 		$this->data['entry_message_template'] = $this->language->get('entry_message_template');
+		$this->data['entry_message_customer'] = $this->language->get('entry_message_customer');
+		$this->data['entry_message_admin'] = $this->language->get('entry_message_admin');
 		$this->data['entry_api_key'] = $this->language->get('entry_api_key');
 		$this->data['entry_phone'] = $this->language->get('entry_phone');
 		$this->data['entry_balance'] = $this->language->get('entry_balance');
@@ -111,6 +113,11 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['text_module'] = $this->language->get('text_module');
 		$this->data['text_money_add'] = $this->language->get('text_money_add');
 		$this->data['text_refresh'] = $this->language->get('text_refresh');
+
+		$this->data['help_message_template'] = $this->language->get('help_message_template');
+		$this->data['help_message_customer'] = $this->language->get('help_message_customer');
+		$this->data['help_message_admin'] = $this->language->get('help_message_admin');
+
 
 		$this->data['error_warning']  = '';
 		$this->data['action']         = $this->url->link('module/smsnot', 'token=' . $this->session->data['token'], 'SSL');
