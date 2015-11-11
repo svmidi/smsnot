@@ -310,8 +310,7 @@ class ControllerModuleSmsnot extends Controller {
 		"api_id"		=>	$api_id,
 		"multi"			=>	$text,
 		"from"			=>	$sender,
-		"partner_id"	=> 34316,
-		"test" =>1);
+		"partner_id"	=> 34316);
 		$ch = curl_init("http://sms.ru/sms/send");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
