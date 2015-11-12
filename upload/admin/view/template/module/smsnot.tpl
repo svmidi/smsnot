@@ -68,8 +68,17 @@
 						<div class="progress">
 						  <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
 						</div>
-						<div><?php echo $entry_characters; ?> <span id="count">0</span></div>
-						<div>SMS: <span id="countSMS">1</span></div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div><?php echo $entry_characters; ?> <span id="count">0</span></div>
+								<div>SMS: <span id="countSMS">1</span></div>
+							</div>
+							<div class="col-sm-6 btn-group" role="group">
+								<button class="btn btn-default btni" type="button" data-insert="{StoreName}" data-target="input-message"><?php echo $button_storename; ?></button>
+								<button class="btn btn-default btni" type="button" data-insert="{Name}" data-target="input-message"><?php echo $button_name; ?></button>
+								<button class="btn btn-default btni" type="button" data-insert="{LastName}" data-target="input-message"><?php echo $button_lastname; ?></button>
+							</div>
+						</div>
 						<textarea name="input-message" rows="5" placeholder="<?php echo $entry_message; ?>" id="input-message" class="form-control"></textarea>
 					</div>
 				</div>
@@ -101,6 +110,11 @@
 						<span data-toggle="tooltip" data-original-title="<?php echo $help_message_template; ?>"><?php echo $entry_message_template; ?></span>
 					</label>
 					<div class="col-sm-10">
+						<div class="btn-group-xs btn-group" role="group">
+							<button class="btn btn-default btni" type="button" data-insert="{StoreName}" data-target="input-message-template"><?php echo $button_orderid; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{Name}" data-target="input-message-template"><?php echo $button_status; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{LastName}" data-target="input-message-template"><?php echo $button_storename; ?></button>
+						</div>
 						<textarea name="smsnot-message-template" rows="5" placeholder="<?php echo $entry_message_template; ?>" id="input-message-template" class="form-control"><?php echo $data['smsnot-message-template']; ?></textarea>
 					</div>
 				</div>
@@ -109,6 +123,10 @@
 						<span data-toggle="tooltip" data-original-title="<?php echo $help_message_customer; ?>"><?php echo $entry_message_customer; ?></span>
 					</label>
 					<div class="col-sm-10">
+						<div class="btn-group-xs btn-group" role="group">
+							<button class="btn btn-default btni" type="button" data-insert="{Name}" data-target="input-message-customer"><?php echo $button_orderid; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{StoreName}" data-target="input-message-customer"><?php echo $button_storename; ?></button>
+						</div>
 						<textarea name="smsnot-message-customer" rows="5" placeholder="<?php echo $entry_message_customer; ?>" id="input-message-customer" class="form-control"><?php echo $data['smsnot-message-customer']; ?></textarea>
 					</div>
 				</div>
@@ -117,6 +135,11 @@
 						<span data-toggle="tooltip" data-original-title="<?php echo $help_message_admin; ?>"><?php echo $entry_message_admin; ?></span>
 					</label>
 					<div class="col-sm-10">
+						<div class="btn-group-xs btn-group" role="group">
+							<button class="btn btn-default btni" type="button" data-insert="{Name}" data-target="input-message-admin"><?php echo $button_orderid; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{StoreName}" data-target="input-message-admin"><?php echo $button_storename; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{LastName}" data-target="input-message-admin"><?php echo $button_total; ?></button>
+						</div>
 						<textarea name="smsnot-message-admin" rows="5" placeholder="<?php echo $entry_message_admin; ?>" id="input-message-admin" class="form-control"><?php echo $data['smsnot-message-admin']; ?></textarea>
 					</div>
 				</div>
@@ -281,6 +304,36 @@ $( document ).ready(function() {
 				}
 			},
 		});
+	});
+	jQuery.fn.extend({
+		insertAtCaret: function(myValue){
+		return this.each(function(i) {
+			if (document.selection) {
+				this.focus();
+				var sel = document.selection.createRange();
+				sel.text = myValue;
+				this.focus();
+			}
+			else if (this.selectionStart || this.selectionStart == '0') {
+				var startPos = this.selectionStart;
+				var endPos = this.selectionEnd;
+				var scrollTop = this.scrollTop;
+				this.value = this.value.substring(0, startPos)+myValue+this.value.substring(endPos,this.value.length);
+				this.focus();
+				this.selectionStart = startPos + myValue.length;
+				this.selectionEnd = startPos + myValue.length;
+				this.scrollTop = scrollTop;
+			} else {
+				this.value += myValue;
+				this.focus();
+			}
+		});
+		}
+	});
+	$('.btni').click(function(){
+		var target=$(this).data('target');
+		var text=$(this).data('insert');
+		$('#'+target).insertAtCaret(text);
 	});
 });
 </script>

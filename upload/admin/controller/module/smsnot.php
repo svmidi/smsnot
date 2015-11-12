@@ -83,6 +83,12 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['button_test'] = $this->language->get('button_test');
 		$this->data['button_send'] = $this->language->get('button_send');
 		$this->data['button_refer'] = $this->language->get('button_refer');
+		$this->data['button_orderid'] = $this->language->get('button_orderid');
+		$this->data['button_storename'] = $this->language->get('button_storename');
+		$this->data['button_name'] = $this->language->get('button_name');
+		$this->data['button_lastname'] = $this->language->get('button_lastname');
+		$this->data['button_status'] = $this->language->get('button_status');
+		$this->data['button_total'] = $this->language->get('button_total');
 
 		$this->data['tab_sending'] = $this->language->get('tab_sending');
 		$this->data['tab_notice'] = $this->language->get('tab_notice');

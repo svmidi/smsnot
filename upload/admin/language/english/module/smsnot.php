@@ -5,6 +5,12 @@ $_['button_cancel']          = 'Cancel';
 $_['button_test']            = 'Send test message';
 $_['button_send']            = 'Send';
 $_['button_refer']           = 'Create account';
+$_['button_name']            = 'First name';
+$_['button_lastname']        = 'Last name';
+$_['button_storename']       = 'Store name';
+$_['button_orderid']         = 'Order ID';
+$_['button_total']           = 'Total';
+$_['button_status']          = 'Status';
 
 $_['tab_sending']            = 'Sending';
 $_['tab_notice']             = 'Notify';

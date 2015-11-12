@@ -5,6 +5,12 @@ $_['button_cancel']          = 'Отмена';
 $_['button_test']            = 'Отправить тестовое сообщение';
 $_['button_send']            = 'Отправить';
 $_['button_refer']           = 'Создать учётную запись';
+$_['button_name']            = 'Имя';
+$_['button_lastname']        = 'Фамилия';
+$_['button_storename']       = 'Название магазина';
+$_['button_orderid']         = 'Номер заказа';
+$_['button_total']           = 'Сумма заказа';
+$_['button_status']          = 'Статус';
 
 $_['tab_sending']            = 'Рассылка';
 $_['tab_notice']             = 'Уведомления';
