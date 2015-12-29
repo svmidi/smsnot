@@ -267,13 +267,13 @@ class ControllerModuleSmsnot extends Controller {
 						$message = str_replace($original, $replace, $this->request->post['message']);
 						$query.='&multi['.$customer['telephone'].']='.$message;
 						if ($i>99) {
-							$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot_sender']);
+							$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
 							$query = '';
 							$i = 0;
 						}
 					}
 				}
-				$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot_sender']);
+				$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
 			}
 		}
 		$this->response->setOutput(json_encode($json));
