@@ -14,15 +14,16 @@ class ControllerModuleSmsnot extends Controller {
 					$original = array("{StoreName}","{OrderID}", "{Total}");
 					$replace = array($this->config->get('config_name'), $order_id, $order_info['total']);
 
-					$message = str_replace($original, $replace, $setting['smsnot-message-customer']);
+					$message = str_replace($original, $replace, $setting['smsnot-message-admin']);
 					$this->sms_send($setting['smsnot-apikey'], $setting['smsnot-phone'], $message, $setting['smsnot-sender']);
-				} elseif ($setting['smsnot-new-order'] == 'on') {
+				}
+				if ($setting['smsnot-new-order'] == 'on') {
 					$original = array("{StoreName}","{OrderID}");
 					$replace = array($this->config->get('config_name'), $order_id);
 
 					$message = str_replace($original, $replace, $setting['smsnot-message-customer']);
 					if (preg_match('/(\+|)[0-9]{11}/', $order_info['telephone'])) {
-						$this->sms_send($setting['smsnot-apikey'], $order_info['smsnot-phone'], $message, $setting['smsnot-sender']);
+						$this->sms_send($setting['smsnot-apikey'], $order_info['telephone'], $message, $setting['smsnot-sender']);
 					}
 				}
 			}
