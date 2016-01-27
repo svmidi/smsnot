@@ -162,13 +162,13 @@ class ControllerModuleSmsnot extends Controller {
 		$basic=array(
 		'smsnot-sender'=>'',
 		'smsnot-phone'=>'',
-		'smsnot-owner'=>'',
 		'smsnot-apikey'=>'',
-		'smsnot-order-change'=>'',
 		'smsnot-message-template'=>'Order №{OrderID} in {StoreName}, changed status to {Status}',
 		'smsnot-message-customer'=>'New order №{OrderID} in {StoreName}',
 		'smsnot-message-admin'=>'New order #{OrderID} at the store "{StoreName}". Total {Total}',
-		'smsnot-new-order'=>'',
+		'smsnot-order-change'=>0,
+		'smsnot-new-order'=>0,
+		'smsnot-owner'=>0,
 		'smsnot-enabled'=>0);
 		$this->model_setting_setting->editSetting('smsnot', $basic, 0);
 	}
