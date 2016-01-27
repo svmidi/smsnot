@@ -41,6 +41,7 @@ class ControllerModuleSmsnot extends Controller {
 				$this->error['warning'] = $this->language->get('error_permission');
 				$this->session->data['error'] = 'You do not have permissions to edit this module!';
 			} else {
+				//print_r($this->request->post); exit;
 				$this->model_setting_setting->editSetting('smsnot', $this->request->post, 0);
 				$this->session->data['success'] = $this->language->get('text_success');
 			}
@@ -89,10 +90,13 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['button_lastname'] = $this->language->get('button_lastname');
 		$this->data['button_status'] = $this->language->get('button_status');
 		$this->data['button_total'] = $this->language->get('button_total');
+		$this->data['button_download'] = $this->language->get('button_download');
+		$this->data['button_clear'] = $this->language->get('button_clear');
 
 		$this->data['tab_sending'] = $this->language->get('tab_sending');
 		$this->data['tab_notice'] = $this->language->get('tab_notice');
 		$this->data['tab_gate'] = $this->language->get('tab_gate');
+		$this->data['tab_log'] = $this->language->get('tab_log');
 
 		$this->data['entry_to'] = $this->language->get('entry_to');
 		$this->data['entry_sender'] = $this->language->get('entry_sender');
@@ -124,14 +128,51 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['help_message_customer'] = $this->language->get('help_message_customer');
 		$this->data['help_message_admin'] = $this->language->get('help_message_admin');
 		$this->data['help_message'] = $this->language->get('help_message');
-
+		$this->data['help_sure'] = $this->language->get('help_sure');
 
 		$this->data['error_warning']  = '';
 		$this->data['action']         = $this->url->link('module/smsnot', 'token=' . $this->session->data['token'], 'SSL');
 		$this->data['cancel']         = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
+		$this->data['download']         = $this->url->link('module/smsnot/download', 'token=' . $this->session->data['token'], 'SSL');
+		$this->data['clear']         = $this->url->link('module/smsnot/clear', 'token=' . $this->session->data['token'], 'SSL');
 		$this->data['data']           = $this->model_setting_setting->getSetting('smsnot');
 		$this->data['balance']        = 0;
 		$this->data['token']          = $this->session->data['token'];
+
+
+		$this->data['log'] = "";
+
+		$file = DIR_LOGS . 'smsnot.log';
+
+		if (file_exists($file)) {
+			$size = filesize($file);
+
+			if ($size >= 5242880) {
+				$suffix = array(
+					'B',
+					'KB',
+					'MB',
+					'GB',
+					'TB',
+					'PB',
+					'EB',
+					'ZB',
+					'YB'
+				);
+
+				$i = 0;
+
+				while (($size / 1024) > 1) {
+					$size = $size / 1024;
+					$i++;
+				}
+				$this->data['log'] = 'File not found: '.$file;
+			} else {
+				$this->data['log'] = file_get_contents($file, FILE_USE_INCLUDE_PATH, null);
+			}
+		}
+
+
 
 		if ($this->data['data']['smsnot-apikey']!='') {
 			$balance = $this->get_balance($this->data['data']['smsnot-apikey']);
@@ -186,6 +227,33 @@ class ControllerModuleSmsnot extends Controller {
 		$this->model_module_smsnot->uninstall();
 		$this->load->model('extension/event');
 		$this->model_extension_event->deleteEvent('smsnot');
+	}
+
+	public function download() {
+		$this->response->addheader('Pragma: public');
+		$this->response->addheader('Expires: 0');
+		$this->response->addheader('Content-Description: File Transfer');
+		$this->response->addheader('Content-Type: application/octet-stream');
+		$this->response->addheader('Content-Disposition: attachment; filename=smsnot_' . date('Y-m-d_H-i-s', time()) . '_error.log');
+		$this->response->addheader('Content-Transfer-Encoding: binary');
+
+		$this->response->setOutput(file_get_contents(DIR_LOGS . 'smsnot.log', FILE_USE_INCLUDE_PATH, null));
+	}
+	
+	public function clear() {
+		$this->load->language('tool/error_log');
+
+		if (!$this->user->hasPermission('modify', 'module/smsnot')) {
+			$this->session->data['error'] = 'You do not have permission to perform this action!';
+		} else {
+			$file = DIR_LOGS . 'smsnot.log';
+
+			$handle = fopen($file, 'w+');
+
+			fclose($handle);
+		}
+
+		$this->response->redirect($this->url->link('module/smsnot', 'token=' . $this->session->data['token'], 'SSL'));
 	}
 
 	public function send() {

@@ -47,6 +47,7 @@
 			<li class="active"><a href="#tab-sending" data-toggle="tab"><?php echo $tab_sending; ?></a></li>
 			<li><a href="#tab-notice" data-toggle="tab"><?php echo $tab_notice; ?></a></li>
 			<li><a href="#tab-gate" data-toggle="tab"><?php echo $tab_gate; ?></a></li>
+			<li><a href="#tab-log" data-toggle="tab"><?php echo $tab_log; ?></a></li>
 		</ul>
 		<div class="tab-content">
 			<div class="tab-pane active in" id="tab-sending">
@@ -149,7 +150,7 @@
 						<div class="well well-sm" style="height: 150px; overflow: auto;">
 							<div class="checkbox">
 								<label>
-								<?php if ($data['smsnot-new-order']) { ?>
+								<?php if ((isset($data['smsnot-new-order'])) AND ($data['smsnot-new-order'])) { ?>
 								<input type="checkbox" name="smsnot-new-order" checked="checked" />
 								<?php } else { ?>
 								<input type="checkbox" name="smsnot-new-order" />
@@ -159,7 +160,7 @@
 							</div>
 							<div class="checkbox">
 								<label>
-								<?php if ($data['smsnot-order-change']) { ?>
+								<?php if ((isset($data['smsnot-order-change'])) AND ($data['smsnot-order-change'])) { ?>
 								<input type="checkbox" name="smsnot-order-change" checked="checked" />
 								<?php } else { ?>
 								<input type="checkbox" name="smsnot-order-change" />
@@ -169,7 +170,7 @@
 							</div>
 							<div class="checkbox">
 								<label>
-								<?php if ($data['smsnot-owner']) { ?>
+								<?php if ((isset($data['smsnot-owner'])) AND ($data['smsnot-owner'])) { ?>
 								<input type="checkbox" name="smsnot-owner" checked="checked" />
 								<?php } else { ?>
 								<input type="checkbox" name="smsnot-owner" />
@@ -210,6 +211,14 @@
 					</div>
 				</div>
 				<div id="result"></div>
+			</div>
+
+			<div class="tab-pane active in" id="tab-log">
+				<div class="pull-right">
+					<a href="<?php echo $download ?>" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="<?php echo $button_download ?>"><i class="fa fa-download"></i></a>
+					<a onclick="confirm('<?php echo $help_sure; ?>') ? location.href='<?php echo $clear; ?>' : false;" data-toggle="tooltip" title="" class="btn btn-danger" data-original-title="<?php echo $button_clear; ?>"><i class="fa fa-eraser"></i></a><p>&nbsp;</p>
+				</div>
+				<textarea wrap="off" rows="15" readonly="" class="form-control"><?php echo $log; ?></textarea>
 			</div>
 		</div>
 		</form>
