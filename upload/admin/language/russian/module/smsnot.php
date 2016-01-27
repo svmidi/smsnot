@@ -11,10 +11,13 @@ $_['button_storename']       = 'Название магазина';
 $_['button_orderid']         = 'Номер заказа';
 $_['button_total']           = 'Сумма заказа';
 $_['button_status']          = 'Статус';
+$_['button_download']        = 'Скачать журнал';
+$_['button_clear']           = 'Очистить журнал';
 
 $_['tab_sending']            = 'Рассылка';
 $_['tab_notice']             = 'Уведомления';
 $_['tab_gate']               = 'Настройки шлюза';
+$_['tab_log']                = 'Журнал';
 
 $_['entry_to']               = 'Кому:';
 $_['entry_sender']           = 'Отправитель:';

@@ -11,10 +11,13 @@ $_['button_storename']       = 'Store name';
 $_['button_orderid']         = 'Order ID';
 $_['button_total']           = 'Total';
 $_['button_status']          = 'Status';
+$_['button_download']        = 'Download';
+$_['button_clear']           = 'Clear';
 
 $_['tab_sending']            = 'Sending';
 $_['tab_notice']             = 'Notify';
 $_['tab_gate']               = 'Settings';
+$_['tab_log']                = 'Log';
 
 $_['entry_to']               = 'To:';
 $_['entry_sender']           = 'From:';
