@@ -197,8 +197,15 @@ class ControllerModuleSmsnot extends Controller {
 		$this->load->model('module/smsnot');
 		$this->model_module_smsnot->install();
 		$this->load->model('extension/event');
-		$this->model_extension_event->addEvent('smsnot', 'pre.order.history.add', 'module/smsnot/onCheckout');
-		$this->model_extension_event->addEvent('smsnot', 'post.order.history.add', 'module/smsnot/onHistoryChange');
+
+		if(strcmp(VERSION,"2.1.0.1") < 0) {
+			$this->model_extension_event->addEvent('smsnot', 'pre.order.history.add', 'module/smsnot/onCheckout');
+			$this->model_extension_event->addEvent('smsnot', 'post.order.history.add', 'module/smsnot/onHistoryChange');
+		} else {
+			$this->model_extension_event->addEvent('smsnot', 'catalog/controller/checkout/success/before', 'module/smsnot/onCheckout');
+			$this->model_extension_event->addEvent('smsnot', 'catalog/model/checkout/order/addOrderHistory/after', 'module/smsnot/onHistoryChange');
+		}
+
 		$this->load->model('setting/setting');
 		$basic=array(
 		'smsnot-sender'=>'',
