@@ -1,8 +1,14 @@
 <?php
 class ControllerModuleSmsnot extends Controller {
 
-	public function onCheckout($order_id = 0) {
-		$order_id = ($order_id != 0)?$order_id:$this->session->data['order_id'];
+	public function onCheckout($order = 0) {
+		if (is_array($order)) {
+			$order_id = $order['order_id'];
+		} elseif ($order == 0) {
+			$order_id = $this->session->data['order_id'];
+		} else {
+			$order_id = $order;
+		}
 		$this->load->model('checkout/order');
 		$order_info = $this->model_checkout_order->getOrder($order_id);
 
@@ -10,23 +16,23 @@ class ControllerModuleSmsnot extends Controller {
 		$setting = $this->model_setting_setting->getSetting('smsnot');
 
 		if(isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey']))) {
-			if ($order_info['order_status_id']) {
-				if ($setting['smsnot-owner'] == 'on') {
-					$total = $this->currency->convert($order_info['total'], $order_info['currency_code'], $order_info['currency_code']);
-					$original = array("{StoreName}","{OrderID}", "{Total}");
-					$replace = array($this->config->get('config_name'), $order_id, $total);
+			if ($setting['smsnot-owner'] == 'on') {
+				$total = $this->currency->convert($order_info['total'], $order_info['currency_code'], $order_info['currency_code']);
+				$original = array("{StoreName}","{OrderID}", "{Total}");
+				$replace = array($this->config->get('config_name'), $order_id, $total);
 
-					$message = str_replace($original, $replace, $setting['smsnot-message-admin']);
-					$this->sms_send($setting['smsnot-apikey'], $setting['smsnot-phone'], $message, $setting['smsnot-sender']);
-				}
-				if ($setting['smsnot-new-order'] == 'on') {
-					$original = array("{StoreName}","{OrderID}");
-					$replace = array($this->config->get('config_name'), $order_id);
+				$message = str_replace($original, $replace, $setting['smsnot-message-admin']);
+				echo 'SMS0:'.$setting['smsnot-phone'].', '.$message;
 
-					$message = str_replace($original, $replace, $setting['smsnot-message-customer']);
-					if (preg_match('/(\+|)[0-9]{11,12}/', $order_info['telephone'])) {
-						$this->sms_send($setting['smsnot-apikey'], $order_info['telephone'], $message, $setting['smsnot-sender']);
-					}
+				$this->sms_send($setting['smsnot-apikey'], $setting['smsnot-phone'], $message, $setting['smsnot-sender']);
+			}
+			if ($setting['smsnot-new-order'] == 'on') {
+				$original = array("{StoreName}","{OrderID}");
+				$replace = array($this->config->get('config_name'), $order_id);
+
+				$message = str_replace($original, $replace, $setting['smsnot-message-customer']);
+				if (preg_match('/(\+|)[0-9]{11,12}/', $order_info['telephone'])) {
+					$this->sms_send($setting['smsnot-apikey'], $order_info['telephone'], $message, $setting['smsnot-sender']);
 				}
 			}
 		}
@@ -43,6 +49,7 @@ class ControllerModuleSmsnot extends Controller {
 		$setting = $this->model_setting_setting->getSetting('smsnot');
 
 		if(isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey'])) && ($setting['smsnot-order-change'] == 'on')) {
+
 			if ($order_info['order_status_id'] && $this->model_module_smsnot->getHistoryCount($order_id)>1) {
 				$status = (isset($order_info['order_status']))?$order_info['order_status']:"";
 
@@ -73,5 +80,4 @@ class ControllerModuleSmsnot extends Controller {
 		curl_close($ch);
 		return $result;
 	}
-
 }
