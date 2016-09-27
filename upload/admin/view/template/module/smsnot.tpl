@@ -213,7 +213,7 @@
 				<div id="result"></div>
 			</div>
 
-			<div class="tab-pane active in" id="tab-log">
+			<div class="tab-pane" id="tab-log">
 				<div class="pull-right">
 					<a href="<?php echo $download ?>" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="<?php echo $button_download ?>"><i class="fa fa-download"></i></a>
 					<a onclick="confirm('<?php echo $help_sure; ?>') ? location.href='<?php echo $clear; ?>' : false;" data-toggle="tooltip" title="" class="btn btn-danger" data-original-title="<?php echo $button_clear; ?>"><i class="fa fa-eraser"></i></a><p>&nbsp;</p>
