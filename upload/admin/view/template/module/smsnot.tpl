@@ -203,6 +203,22 @@
 					</div>
 				</div>
 				<div class="form-group">
+					<label class="col-sm-2 control-label" for="input-sender-log"><?php echo $entry_smsnot_log; ?> </label>
+					<div class="col-sm-10">
+						<div class="checkbox">&nbsp;&nbsp;&nbsp;
+							<?php if ((isset($data['smsnot-log'])) AND ($data['smsnot-log'])) { $show_help = 'show'; ?>
+							<input type="checkbox" id="input-smsnot-log" name="smsnot-log" checked="checked" />
+							<?php } else { $show_help = 'hidden';?>
+							<input type="checkbox" id="input-smsnot-log" name="smsnot-log" />
+							<?php } ?>
+						</div>
+						<div id="help-callback" class="<?php echo $show_help; ?>">
+						<?php echo $help_callback; ?>
+						<div class="well text-center"><?php echo $callback; ?></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
 					<div class="col-sm-6 text-right">
 						<a href="http://svmidi.sms.ru/?panel=register" target="_blank" class="btn btn-success"><?php echo $button_refer; ?></a>
 					</div>
@@ -213,20 +229,87 @@
 				<div id="result"></div>
 			</div>
 
+		</form>
 			<div class="tab-pane" id="tab-log">
-				<div class="pull-right">
-					<a href="<?php echo $download ?>" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="<?php echo $button_download ?>"><i class="fa fa-download"></i></a>
-					<a onclick="confirm('<?php echo $help_sure; ?>') ? location.href='<?php echo $clear; ?>' : false;" data-toggle="tooltip" title="" class="btn btn-danger" data-original-title="<?php echo $button_clear; ?>"><i class="fa fa-eraser"></i></a><p>&nbsp;</p>
+			
+
+			<?php if ((isset($data['smsnot-log'])) AND ($data['smsnot-log'])) { ?>
+			<div class="well">
+				<div class="row">
+					<div class="col-sm-3">
+						<div class="form-group">
+							<label class="control-label" for="input-phone"><?php echo $entry_phone; ?></label>
+							<input type="phone" name="filter_phone" value="" placeholder="<?php echo $entry_phone; ?>" id="input-phone" class="form-control">
+						</div>
+						<div class="form-group">
+							<label class="control-label" for="input-text"><?php echo $entry_text; ?></label>
+							<input type="text" name="filter_text" value="" placeholder="<?php echo $entry_text; ?>" id="input-text" class="form-control" autocomplete="off">
+						</div>
+					</div>
+					<div class="col-sm-1"></div>
+					<div class="col-sm-3">
+						<div class="form-group">
+							<label class="control-label" for="input-date-start"><?php echo $entry_date_start; ?></label>
+							<div class="input-group date">
+								<input type="text" name="filter_date_start" value="" placeholder="<?php echo $entry_date_start; ?>" data-date-format="YYYY-MM-DD" id="input-date-start" class="form-control" />
+								<span class="input-group-btn">
+								<button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+								</span>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label" for="input-date-stop"><?php echo $entry_date_stop; ?></label>
+							<div class="input-group date">
+								<input type="text" name="filter_date_stop" value="" placeholder="<?php echo $entry_date_stop; ?>" data-date-format="YYYY-MM-DD" id="input-date-stop" class="form-control" />
+								<span class="input-group-btn">
+								<button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-1"></div>
+					<div class="col-sm-4">
+						<div class="form-group">
+							<label class="control-label" for="input-status"><?php echo $entry_status; ?></label>
+							<select name="filter_status" id="input-status" class="form-control">
+								<option value="*">*</option>
+								<?php foreach ($statuses as $key => $status) {
+								echo '<option value="'.$key.'">'.$status.'</option>';
+								} ?>
+							</select>
+						</div>
+						<div class="form-group">
+							<p>&nbsp;</p>
+							<button type="button" id="button-filte" class="btn btn-primary pull-right"><i class="fa fa-search"></i> <?php echo $button_filter; ?></button>
+						</div>
+					</div>
 				</div>
-				<textarea wrap="off" rows="15" readonly="" class="form-control"><?php echo $log; ?></textarea>
+			</div>
+
+				<div id="log"></div>
+			<?php } else { ?>
+				<div class="alert alert-info"><?php echo $text_log_disabled; ?></p>
+			<?php } ?>
 			</div>
 		</div>
-		</form>
 		</div>
 	</div>
 </div>
+
 <script type="text/javascript">
 $( document ).ready(function() {
+
+	$("#input-smsnot-log").on('click change', function(){
+		if ($("#input-smsnot-log").prop("checked")) {
+			$("#help-callback").addClass('show');
+			$("#help-callback").removeClass('hidden');
+		} else {
+			$("#help-callback").addClass('hidden');
+			$("#help-callback").removeClass('show');
+		}
+		
+	});
+
 	$("#input-message").keyup(function() {
 		if (/[а-я]/i.test($("#input-message").val()))
 			max=70;
@@ -344,6 +427,73 @@ $( document ).ready(function() {
 		var text=$(this).data('insert');
 		$('#'+target).insertAtCaret(text);
 	});
+
+
+	$('#log').delegate('.sort', 'click', function(e) {
+		e.preventDefault();
+		$('#log').load(this.href);
+	});
+
+	$('#log').delegate('.pagination a', 'click', function(e) {
+		e.preventDefault();
+
+		$('#log').load(this.href);
+	});
+
+	$('#log').load('http://cartest.43vp.ru/admin/index.php?route=module/smsnot/log&token=<?php echo $token; ?>');
+
+	
+
+$('.date').datetimepicker({
+	pickTime: false
+});
+
+
+$('#button-filte').on('click', function(e) {
+	url = 'index.php?route=module/smsnot/log&token=<?php echo $token; ?>';
+
+	var filter_phone = $('input[name=\'filter_phone\']').val();
+
+	if (filter_phone) {
+		url += '&filter_phone=' + encodeURIComponent(filter_phone);
+	}
+
+	var filter_text = $('input[name=\'filter_text\']').val();
+
+	if (filter_text) {
+		url += '&filter_text=' + encodeURIComponent(filter_text);
+	}
+
+	var filter_status = $('select[name=\'filter_status\']').val();
+
+	if (filter_status != '*') {
+		url += '&filter_status=' + encodeURIComponent(filter_status);
+	}
+
+	var filter_date_start = $('input[name=\'filter_date_start\']').val();
+
+	if (filter_date_start) {
+		url += '&filter_date_start=' + encodeURIComponent(filter_date_start);
+	}
+
+	var filter_date_stop = $('input[name=\'filter_date_stop\']').val();
+
+	if (filter_date_stop) {
+		url += '&filter_date_stop=' + encodeURIComponent(filter_date_stop);
+	}
+
+	alert(url)
+	//location = url;
+	$('#log').load(url);
+});
+
+
+
+
+
+
+
+
 });
 </script>
 </div>

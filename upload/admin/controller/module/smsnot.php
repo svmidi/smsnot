@@ -92,6 +92,8 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['button_total'] = $this->language->get('button_total');
 		$this->data['button_download'] = $this->language->get('button_download');
 		$this->data['button_clear'] = $this->language->get('button_clear');
+		$this->data['button_filter'] = $this->language->get('button_filter');
+
 
 		$this->data['tab_sending'] = $this->language->get('tab_sending');
 		$this->data['tab_notice'] = $this->language->get('tab_notice');
@@ -123,55 +125,35 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['text_module'] = $this->language->get('text_module');
 		$this->data['text_money_add'] = $this->language->get('text_money_add');
 		$this->data['text_refresh'] = $this->language->get('text_refresh');
+		$this->data['text_log_disabled'] = $this->language->get('text_log_disabled');
 
 		$this->data['help_message_template'] = $this->language->get('help_message_template');
 		$this->data['help_message_customer'] = $this->language->get('help_message_customer');
 		$this->data['help_message_admin'] = $this->language->get('help_message_admin');
 		$this->data['help_message'] = $this->language->get('help_message');
 		$this->data['help_sure'] = $this->language->get('help_sure');
+		$this->data['help_callback'] = $this->language->get('help_callback');
+
+		$this->data['entry_date_start'] = $this->language->get('entry_date_start');
+		$this->data['entry_date_stop'] = $this->language->get('entry_date_stop');
+		$this->data['entry_date_start'] = $this->language->get('entry_date_start');
+		$this->data['entry_date_stop'] = $this->language->get('entry_date_stop');
+		$this->data['entry_status'] = $this->language->get('entry_status');
+		$this->data['entry_phone'] = $this->language->get('entry_phone');
+		$this->data['entry_text'] = $this->language->get('entry_text');
+		$this->data['entry_smsnot_log'] = $this->language->get('entry_smsnot_log');
 
 		$this->data['error_warning']  = '';
 		$this->data['action']         = $this->url->link('module/smsnot', 'token=' . $this->session->data['token'], 'SSL');
 		$this->data['cancel']         = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
-		$this->data['download']         = $this->url->link('module/smsnot/download', 'token=' . $this->session->data['token'], 'SSL');
-		$this->data['clear']         = $this->url->link('module/smsnot/clear', 'token=' . $this->session->data['token'], 'SSL');
+
 		$this->data['data']           = $this->model_setting_setting->getSetting('smsnot');
 		$this->data['balance']        = 0;
 		$this->data['token']          = $this->session->data['token'];
+		$this->data['log_href'] = $this->url->link('module/smsnot/log', 'token=' . $this->session->data['token']);
+		$this->data['token'] = $this->session->data['token'];
 
-
-		$this->data['log'] = "";
-
-		$file = DIR_LOGS . 'smsnot.log';
-
-		if (file_exists($file)) {
-			$size = filesize($file);
-
-			if ($size >= 5242880) {
-				$suffix = array(
-					'B',
-					'KB',
-					'MB',
-					'GB',
-					'TB',
-					'PB',
-					'EB',
-					'ZB',
-					'YB'
-				);
-
-				$i = 0;
-
-				while (($size / 1024) > 1) {
-					$size = $size / 1024;
-					$i++;
-				}
-				$this->data['log'] = 'File not found: '.$file;
-			} else {
-				$this->data['log'] = file_get_contents($file, FILE_USE_INCLUDE_PATH, null);
-			}
-		}
-
+		$this->data['callback'] = $this->url->link('api/smscallback', '', 'SSL');
 
 
 		if ($this->data['data']['smsnot-apikey']!='') {
@@ -193,12 +175,119 @@ class ControllerModuleSmsnot extends Controller {
 		$this->response->setOutput($this->load->view('module/smsnot.tpl', $this->data));
 	}
 
+	public function log() {
+		$this->load->language('module/smsnot');
+		$this->data['column_date'] = $this->language->get('column_date');
+		$this->data['column_text'] = $this->language->get('column_text');
+		$this->data['column_sms_id'] = $this->language->get('column_sms_id');
+		$this->data['column_phone'] = $this->language->get('column_phone');
+		$this->data['column_status'] = $this->language->get('column_status');
+
+		if (isset($this->request->get['page'])) {
+			$page = $this->request->get['page'];
+		} else {
+			$page = 1;
+		}
+
+		$url = '';
+
+		if (isset($this->request->get['filter_text'])) {
+			$url .= '&filter_text=' . urlencode(html_entity_decode($this->request->get['filter_text'], ENT_QUOTES, 'UTF-8'));
+			$filter_text = $this->request->get['filter_text'];
+		} else {
+			$filter_text = null;
+		}
+
+		if (isset($this->request->get['filter_phone'])) {
+			$url .= '&filter_phone=' . urlencode(html_entity_decode($this->request->get['filter_phone'], ENT_QUOTES, 'UTF-8'));
+			$filter_phone = $this->request->get['filter_phone'];
+		} else {
+			$filter_phone = null;
+		}
+
+		if (isset($this->request->get['filter_date_start'])) {
+			$url .= '&filter_date_start=' . $this->request->get['filter_date_start'];
+			$filter_date_start = $this->request->get['filter_date_start'];
+		} else {
+			$filter_date_start = null;
+		}
+
+		if (isset($this->request->get['filter_date_stop'])) {
+			$url .= '&filter_date_stop=' . $this->request->get['filter_date_stop'];
+			$filter_date_stop = $this->request->get['filter_date_stop'];
+		} else {
+			$filter_date_stop = null;
+		}
+
+		if (isset($this->request->get['filter_status'])) {
+			$url .= '&filter_status=' . $this->request->get['filter_status'];
+			$filter_status = $this->request->get['filter_status'];
+		} else {
+			$filter_status = null;
+		}
+
+		$this->data['text_no_results'] = $this->language->get('text_no_result');
+
+		$this->data['statuses'] = $this->error_array;
+
+
+		if (isset($this->request->get['order'])) {
+			$order = $this->request->get['order'];
+		} else {
+			$order = 'DESC';
+		}
+		//b8:70:f4:2e:f3:43 ac:81:12:a4:74:bb
+		if (isset($this->request->get['sort'])) {
+			$sort = $this->request->get['sort'];
+			$url = '&sort=id&order='.$order;
+		} else {
+			$sort = '';
+		}
+
+		if ($order == 'ASC') {
+			$order = 'DESC';
+		} else {
+			$order = 'ASC';
+		}
+		$this->data['date'] = $this->url->link('module/smsnot/log', 'token=' . $this->session->data['token'] . $url . '&sort=id&order='.$order, true);
+
+		$this->load->model('module/smsnot');
+
+		$filter_data = array(
+			'filter_text'              => $filter_text,
+			'filter_phone'             => $filter_phone,
+			'filter_date_start'        => $filter_date_start,
+			'filter_date_stop'         => $filter_date_stop,
+			'filter_status'            => $filter_status,
+			'sort'                     => $sort,
+			'order'                    => $order,
+			'start'                    => ($page - 1) * $this->config->get('config_limit_admin'),
+			'limit'                    => $this->config->get('config_limit_admin')
+		);
+
+		$this->data['sends'] = $this->model_module_smsnot->getLogRecords($filter_data);
+		$total = $this->model_module_smsnot->getLogRecordsTotal($filter_data);
+		echo ' page='.$page.' total='.$total;
+
+		$pagination = new Pagination();
+		$pagination->total = $total;
+		$pagination->page = $page;
+		$pagination->limit = $this->config->get('config_limit_admin');
+		$pagination->url = $this->url->link('module/smsnot/log', 'token=' . $this->session->data['token'] . $url . '&page={page}', true);
+
+		$this->data['pagination'] = $pagination->render();
+
+		$this->data['results'] = sprintf($this->language->get('text_pagination'), ($total) ? (($page - 1) * $this->config->get('config_limit_admin')) + 1 : 0, ((($page - 1) * $this->config->get('config_limit_admin')) > ($total - $this->config->get('config_limit_admin'))) ? $total : ((($page - 1) * $this->config->get('config_limit_admin')) + $this->config->get('config_limit_admin')), $total, ceil($total / $this->config->get('config_limit_admin')));
+
+		$this->response->setOutput($this->load->view('module/smsnot_log.tpl', $this->data));
+	}
+
 	public function install() {
 		$this->load->model('module/smsnot');
 		$this->model_module_smsnot->install();
 		$this->load->model('extension/event');
 
-		if(strcmp(substr(VERSION, 0, 7), "2.1.0.2") <= 0) {
+		if(strcmp(VERSION,"2.1.0.2") < 0) {
 			$this->model_extension_event->addEvent('smsnot', 'post.order.add', 'module/smsnot/onCheckout');
 			$this->model_extension_event->addEvent('smsnot', 'post.order.history.add', 'module/smsnot/onHistoryChange');
 		} else {
@@ -217,6 +306,7 @@ class ControllerModuleSmsnot extends Controller {
 		'smsnot-order-change'=>0,
 		'smsnot-new-order'=>0,
 		'smsnot-owner'=>0,
+		'smsnot-log'=>0,
 		'smsnot-enabled'=>0);
 		$this->model_setting_setting->editSetting('smsnot', $basic, 0);
 	}
@@ -236,32 +326,6 @@ class ControllerModuleSmsnot extends Controller {
 		$this->model_extension_event->deleteEvent('smsnot');
 	}
 
-	public function download() {
-		$this->response->addheader('Pragma: public');
-		$this->response->addheader('Expires: 0');
-		$this->response->addheader('Content-Description: File Transfer');
-		$this->response->addheader('Content-Type: application/octet-stream');
-		$this->response->addheader('Content-Disposition: attachment; filename=smsnot_' . date('Y-m-d_H-i-s', time()) . '_error.log');
-		$this->response->addheader('Content-Transfer-Encoding: binary');
-
-		$this->response->setOutput(file_get_contents(DIR_LOGS . 'smsnot.log', FILE_USE_INCLUDE_PATH, null));
-	}
-	
-	public function clear() {
-		$this->load->language('tool/error_log');
-
-		if (!$this->user->hasPermission('modify', 'module/smsnot')) {
-			$this->session->data['error'] = 'You do not have permission to perform this action!';
-		} else {
-			$file = DIR_LOGS . 'smsnot.log';
-
-			$handle = fopen($file, 'w+');
-
-			fclose($handle);
-		}
-
-		$this->response->redirect($this->url->link('module/smsnot', 'token=' . $this->session->data['token'], 'SSL'));
-	}
 
 	public function send() {
 		$json = array();
