@@ -2,11 +2,13 @@
 class ModelModuleSmsnot extends Model {
 	
 	public function install() {
-	// Install Code
+		$sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "smsnot` (`id` int(11) NOT NULL AUTO_INCREMENT, `text` text NOT NULL, `date` datetime NOT NULL, `sms_id` tinytext NOT NULL, `status` int(11) NOT NULL, `phone` tinytext NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=32;";
+		$this->db->query($sql);
 	}
 
 	public function uninstall() {
-	// Uninstall Code
+		$sql = "DROP TABLE " . DB_PREFIX . "smsnot;";
+		$this->db->query($sql);
 	}
 
 	public function getTotalCustomers($data = array()) {
@@ -73,7 +75,6 @@ class ModelModuleSmsnot extends Model {
 			}
 		}
 
-
 		if (isset($filter['start']) || isset($filter['limit'])) {
 			if ($filter['start'] < 0) {
 				$filter['start'] = 0;
@@ -86,7 +87,7 @@ class ModelModuleSmsnot extends Model {
 			$sql .= " LIMIT " . (int)$filter['start'] . "," . (int)$filter['limit'];
 		}
 		$query = $this->db->query($sql);
-echo $sql;
+
 		return $query->rows;
 	}
 
@@ -106,6 +107,15 @@ echo $sql;
 
 		$query = $this->db->query($sql);
 		return $query->row['total'];
+	}
+
+	public function setLogRecord($smsru = array()) {
+
+		$sql = "INSERT INTO  `".DB_PREFIX."smsnot` (`id`,`date`,`status`,`phone`,`sms_id`, `text`) 
+		VALUES (NULL, NOW(), '".$smsru['error']."', '".$smsru['phone']."', '".$smsru['smsru']."', '".$smsru['text']."')";
+
+		$query = $this->db->query($sql);
+		return true;
 	}
 }
 ?>
