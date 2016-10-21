@@ -16,7 +16,7 @@ class ControllerModuleSmsnot extends Controller {
 		$setting = $this->model_setting_setting->getSetting('smsnot');
 
 		if(isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey']))) {
-			if (isset($setting['smsnot-owner']) && ($setting['smsnot-owner'] == 'on') {
+			if (isset($setting['smsnot-owner']) && ($setting['smsnot-owner'] == 'on')) {
 				$total = $this->currency->convert($order_info['total'], $order_info['currency_code'], $order_info['currency_code']);
 				$original = array("{StoreName}","{OrderID}", "{Total}");
 				$replace = array($this->config->get('config_name'), $order_id, $total);
@@ -25,7 +25,7 @@ class ControllerModuleSmsnot extends Controller {
 
 				$this->sms_send($setting['smsnot-apikey'], $setting['smsnot-phone'], $message, $setting['smsnot-sender']);
 			}
-			if (isset($setting['smsnot-new-order']) && ($setting['smsnot-new-order'] == 'on') {
+			if (isset($setting['smsnot-new-order']) && ($setting['smsnot-new-order'] == 'on')) {
 				$original = array("{StoreName}","{OrderID}");
 				$replace = array($this->config->get('config_name'), $order_id);
 
