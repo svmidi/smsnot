@@ -13,6 +13,7 @@ $_['button_total']           = 'Total';
 $_['button_status']          = 'Status';
 $_['button_download']        = 'Download';
 $_['button_clear']           = 'Clear';
+$_['button_filter']          = 'Filter';
 
 $_['tab_sending']            = 'Sending';
 $_['tab_notice']             = 'Notify';
@@ -30,6 +31,12 @@ $_['entry_api_key']          = 'API key:';
 $_['entry_phone']            = 'Phone owner:';
 $_['entry_balance']          = 'Balance:';
 $_['entry_characters']       = 'Characters:';
+$_['entry_date_start']       = 'Date start';
+$_['entry_date_stop']        = 'Date stop';
+$_['entry_status']           = 'Status';
+$_['entry_phone']            = 'Phone';
+$_['entry_text']             = 'Text';
+$_['entry_smsnot_log']       = 'Enable log: ';
 
 $_['text_enable']            = 'enabled';
 $_['text_disable']           = 'disabled';
@@ -46,12 +53,19 @@ $_['text_order_change']      = 'Changed order status (customer)';
 $_['text_owner']             = 'Notification of the co-owner of the new order';
 $_['text_send_success']      = 'Message sent';
 $_['text_send_error']        = 'Error sending';
+$_['text_no_result']         = 'No result';
+$_['text_log_disabled']      = 'Log disabled in settings';
 
 $_['column_text']            = 'Text';
+$_['column_phone']           = 'Phone';
+$_['column_date']            = 'Date';
+$_['column_status']          = 'Status';
+$_['column_sms_id']          = 'SMS id';
 
 $_['help_message_template'] = 'The message that customer will get a change order status. {OrderID} - order id, {Status} - order status, {StoreName} - store name.';
 $_['help_message_customer'] = 'The message that will get the customer to create a new order. {OrderID} - order id, {StoreName} - store name.';
 $_['help_message_admin']    = 'The message that will get the owner to create a new order. {OrderID} - order id, {StoreName} - store name, {Total} - order price.';
 $_['help_message']          = 'The message. {Name} - first name, {LastName} - last name, {StoreName} - store name.';
 $_['help_sure']             = 'You are sure?';
+$_['help_callback']         = 'Enter address sms callback <a href="https://svmidi.sms.ru/?panel=apps&subpanel=cb" target="_blank">sms.ru</a>';
 ?>
