@@ -23,6 +23,30 @@ class ControllerModuleSmsnot extends Controller {
 		301 =>"Неправильный пароль, либо пользователь не найден",
 		302 =>"Пользователь авторизован, но аккаунт не подтвержден (пользователь не ввел код, присланный в регистрационной смс)");
 
+	private $status_array = array(-1	 => 'Cообщение не найдено.',
+		100 => 'В очереди',
+		101 => 'Передается оператору',
+		102 => 'Отправлено (в пути)',
+		103 => 'Сообщение доставлено',
+		104 => 'Не доставлено: время жизни истекло',
+		105 => 'Не доставлено: удалено оператором',
+		106 => 'Не доставлено: сбой в телефоне',
+		107 => 'Не доставлено: неизвестная причина',
+		108 => 'Не доставлено: отклонено',
+		130 => 'Не доставлено: превышено количество сообщений на этот номер в день',
+		131 => 'Не доставлено: превышено количество одинаковых сообщений на этот номер в минуту',
+		132 => 'Не доставлено: превышено количество одинаковых сообщений на этот номер в день',
+		200 => 'Неправильный api_id',
+		210 => 'Используется GET, где необходимо использовать POST',
+		211 => 'Метод не найден',
+		220 => 'Сервис временно недоступен, попробуйте чуть позже.',
+		230 => 'Превышен общий лимит количества сообщений на этот номер в день.',
+		231 => 'Превышен лимит одинаковых сообщений на этот номер в минуту.',
+		232 => 'Превышен лимит одинаковых сообщений на этот номер в день.',
+		300 => 'Неправильный token',
+		301 => 'Неправильный пароль',
+		302 => 'Аккаунт не подтвержден');
+
 	public function index() {
 
 		$this->load->language('module/smsnot');
@@ -153,7 +177,9 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['log_href'] = $this->url->link('module/smsnot/log', 'token=' . $this->session->data['token']);
 		$this->data['token'] = $this->session->data['token'];
 
-		$this->data['callback'] = $this->url->link('api/smscallback', '', 'SSL');
+		$this->data['statuses'] = $this->status_array;
+
+		$this->data['callback'] = str_replace("/admin", "", $this->url->link('api/smscallback', '', 'SSL'));
 
 
 		if ($this->data['data']['smsnot-apikey']!='') {
@@ -182,6 +208,8 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['column_sms_id'] = $this->language->get('column_sms_id');
 		$this->data['column_phone'] = $this->language->get('column_phone');
 		$this->data['column_status'] = $this->language->get('column_status');
+
+		$this->data['statuses'] = $this->status_array;
 
 		if (isset($this->request->get['page'])) {
 			$page = $this->request->get['page'];
@@ -228,15 +256,13 @@ class ControllerModuleSmsnot extends Controller {
 
 		$this->data['text_no_results'] = $this->language->get('text_no_result');
 
-		$this->data['statuses'] = $this->error_array;
-
 
 		if (isset($this->request->get['order'])) {
 			$order = $this->request->get['order'];
 		} else {
 			$order = 'DESC';
 		}
-		//b8:70:f4:2e:f3:43 ac:81:12:a4:74:bb
+
 		if (isset($this->request->get['sort'])) {
 			$sort = $this->request->get['sort'];
 			$url = '&sort=id&order='.$order;
@@ -267,7 +293,6 @@ class ControllerModuleSmsnot extends Controller {
 
 		$this->data['sends'] = $this->model_module_smsnot->getLogRecords($filter_data);
 		$total = $this->model_module_smsnot->getLogRecordsTotal($filter_data);
-		echo ' page='.$page.' total='.$total;
 
 		$pagination = new Pagination();
 		$pagination->total = $total;
@@ -339,8 +364,12 @@ class ControllerModuleSmsnot extends Controller {
 				$json['message'] = 'The message field should not be empty!';
 			}
 			if (!$json) {
-				$response = $this->sms_send($this->request->post['api'],$this->request->post['to'],$this->request->post['message'],$this->request->post['sender']);
-				$json = $response;
+				$resp = $this->sms_send($this->request->post['api'],$this->request->post['to'],$this->request->post['message'],$this->request->post['sender']);
+
+				$this->load->model('module/smsnot');
+				$resp['phone'] = $this->request->post['to'];
+				$json = json_encode($resp);
+				$this->model_module_smsnot->setLogRecord($resp);
 			}
 		}
 		$this->response->setOutput(json_encode($json));
@@ -424,7 +453,8 @@ class ControllerModuleSmsnot extends Controller {
 		$result=array();
 		if ($ex[0] == 100) {
 			$balance=explode("=", $ex[2]);
-			$result['error'] = 0;
+			$result['error'] = 100;
+			$result['smsru'] = $ex[1];
 			$result['balance'] = $balance[1];
 			$result['text'] = $this->language->get('text_send_success');
 		} else {
@@ -436,10 +466,11 @@ class ControllerModuleSmsnot extends Controller {
 
 	private function sms_send($api_id, $to=0, $text=0, $sender='') {
 		$param = array(
-		"api_id"		=>	$api_id,
-		"to"			=>	$to,
-		"text"			=>	$text,
-		"from"			=>	$sender,
+		"api_id"		=> $api_id,
+		"to"			=> $to,
+		"text"			=> $text,
+		"from"			=> $sender,
+		'test'          => 1,
 		"partner_id"	=> 34316);
 		$ch = curl_init("http://sms.ru/sms/send");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

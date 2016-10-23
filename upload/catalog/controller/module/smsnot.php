@@ -15,8 +15,9 @@ class ControllerModuleSmsnot extends Controller {
 		$this->load->model('setting/setting');
 		$setting = $this->model_setting_setting->getSetting('smsnot');
 
-		if(isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey']))) {
-			if (isset($setting['smsnot-owner']) && ($setting['smsnot-owner'] == 'on') {
+		if (isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey']))) {
+
+			if (isset($setting['smsnot-owner']) && ($setting['smsnot-owner'] == 'on')) {
 				$total = $this->currency->convert($order_info['total'], $order_info['currency_code'], $order_info['currency_code']);
 				$original = array("{StoreName}","{OrderID}", "{Total}");
 				$replace = array($this->config->get('config_name'), $order_id, $total);
@@ -25,7 +26,7 @@ class ControllerModuleSmsnot extends Controller {
 
 				$this->sms_send($setting['smsnot-apikey'], $setting['smsnot-phone'], $message, $setting['smsnot-sender']);
 			}
-			if (isset($setting['smsnot-new-order']) && ($setting['smsnot-new-order'] == 'on') {
+			if (isset($setting['smsnot-new-order']) && ($setting['smsnot-new-order'] == 'on')) {
 				$original = array("{StoreName}","{OrderID}");
 				$replace = array($this->config->get('config_name'), $order_id);
 
@@ -58,7 +59,7 @@ class ControllerModuleSmsnot extends Controller {
 				$message = str_replace($original, $replace, $setting['smsnot-message-template']);
 				
 				if (preg_match('/(\+|)[0-9]{11,12}/', $order_info['telephone'])) {
-					$response=$this->sms_send($setting['smsnot-apikey'], $order_info['telephone'], $message, $setting['smsnot-sender']);
+					$this->sms_send($setting['smsnot-apikey'], $order_info['telephone'], $message, $setting['smsnot-sender']);
 				}
 			}
 		}
@@ -77,6 +78,30 @@ class ControllerModuleSmsnot extends Controller {
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
 		$result = curl_exec($ch);
 		curl_close($ch);
+
+		$this->load->model('module/smsnot');
+		$resp = $this->read_response($result);
+		$resp['phone'] = $to;
+		$resp['text'] = $text;
+		$this->model_module_smsnot->setLogRecord($resp);
+
+		return $result;
+	}
+
+	private function read_response($response){
+		$this->load->language('module/smsnot');
+		$ex = explode("\n", $response);
+		$result=array();
+		if ($ex[0] == 100) {
+			$balance=explode("=", $ex[2]);
+			$result['error'] = 100;
+			$result['smsru'] = $ex[1];
+			$result['balance'] = $balance[1];
+			$result['text'] = $this->language->get('text_send_success');
+		} else {
+			$result['error'] = $ex[0];
+			$result['text'] = $this->language->get('text_send_error').' ('.$this->error_array[$ex[0]].')';
+		}
 		return $result;
 	}
 }

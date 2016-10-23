@@ -273,8 +273,9 @@
 							<label class="control-label" for="input-status"><?php echo $entry_status; ?></label>
 							<select name="filter_status" id="input-status" class="form-control">
 								<option value="*">*</option>
-								<?php foreach ($statuses as $key => $status) {
-								echo '<option value="'.$key.'">'.$status.'</option>';
+								<?php print_r($statuses);
+								foreach ($statuses as $key => $title) {
+								echo '<option value="'.$key.'">'.$title.'</option>';
 								} ?>
 							</select>
 						</div>
@@ -343,17 +344,20 @@ $( document ).ready(function() {
 			data: data,
 			success: function(html){
 				var jsonData = JSON.parse(html);
-				if (jsonData['error'])
+				if (jsonData['error'] != 100)
 					$('#result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
 				else
 				{
 					$('#result').html('<div class="alert alert-success">'+jsonData['text']+'</div>');
 					$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
-					btn.button('reset');
 				}
+				btn.button('reset');
 			},
 		});
 	});
+
+
+
 
 	$("#balance").click(function(){
 		var data="&api="+$('#input-apikey').val();
@@ -481,9 +485,9 @@ $('#button-filte').on('click', function(e) {
 	if (filter_date_stop) {
 		url += '&filter_date_stop=' + encodeURIComponent(filter_date_stop);
 	}
-
+/*
 	alert(url)
-	//location = url;
+	//location = url;*/
 	$('#log').load(url);
 });
 

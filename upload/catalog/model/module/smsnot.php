@@ -14,5 +14,14 @@ class ModelModuleSmsnot extends Model {
 
 		return true;
 	}
+
+	public function setLogRecord($smsru = array()) {
+
+		$sql = "INSERT INTO  `".DB_PREFIX."smsnot` (`id`,`date`,`status`,`phone`,`sms_id`, `text`) 
+		VALUES (NULL, NOW(), '".$smsru['error']."', '".$smsru['phone']."', '".$smsru['smsru']."', '".$smsru['text']."')";
+
+		$query = $this->db->query($sql);
+		return true;
+	}
 }
 ?>

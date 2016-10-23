@@ -17,7 +17,7 @@
 				<td class="text-left"><?php echo $sms['text']; ?></td>
 				<td class="text-left"><?php echo $sms['sms_id']; ?></td>
 				<td class="text-left"><?php echo $sms['phone']; ?></td>
-				<td class="text-right"><?php echo $sms['status']; ?></td>
+				<td class="text-right"><?php echo $statuses[$sms['status']]; ?></td>
 			</tr>
 			<?php } ?>
 			<?php } else { ?>
