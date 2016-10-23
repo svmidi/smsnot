@@ -16,7 +16,6 @@ class ControllerModuleSmsnot extends Controller {
 		$setting = $this->model_setting_setting->getSetting('smsnot');
 
 		if (isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey']))) {
-
 			if (isset($setting['smsnot-owner']) && ($setting['smsnot-owner'] == 'on')) {
 				$total = $this->currency->convert($order_info['total'], $order_info['currency_code'], $order_info['currency_code']);
 				$original = array("{StoreName}","{OrderID}", "{Total}");
