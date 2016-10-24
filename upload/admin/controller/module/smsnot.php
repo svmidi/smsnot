@@ -264,7 +264,7 @@ class ControllerModuleSmsnot extends Controller {
 		if (isset($this->request->get['order'])) {
 			$order = $this->request->get['order'];
 		} else {
-			$order = 'DESC';
+			$order = 'ASC';
 		}
 
 		if (isset($this->request->get['sort'])) {

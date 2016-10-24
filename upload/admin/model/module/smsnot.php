@@ -68,11 +68,13 @@ class ModelModuleSmsnot extends Model {
 
 		if (isset($filter['sort']) && in_array($filter['sort'], $sort_data)) {
 			$sql .= " ORDER BY " . $filter['sort'];
-			if (isset($filter['order']) && ($filter['order'] == 'DESC')) {
-				$sql .= " DESC";
-			} else {
+			if (isset($filter['order']) && ($filter['order'] == 'ASC')) {
 				$sql .= " ASC";
+			} else {
+				$sql .= " DESC";
 			}
+		} else {
+			$sql .= " ORDER BY id DESC";
 		}
 
 		if (isset($filter['start']) || isset($filter['limit'])) {
@@ -86,6 +88,7 @@ class ModelModuleSmsnot extends Model {
 
 			$sql .= " LIMIT " . (int)$filter['start'] . "," . (int)$filter['limit'];
 		}
+		echo $sql;
 		$query = $this->db->query($sql);
 
 		return $query->rows;
