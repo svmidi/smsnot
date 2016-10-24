@@ -115,6 +115,9 @@
 							<button class="btn btn-default btni" type="button" data-insert="{OrderID}" data-target="input-message-template"><?php echo $button_orderid; ?></button>
 							<button class="btn btn-default btni" type="button" data-insert="{Status}" data-target="input-message-template"><?php echo $button_status; ?></button>
 							<button class="btn btn-default btni" type="button" data-insert="{StoreName}" data-target="input-message-template"><?php echo $button_storename; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{FirstName}" data-target="input-message-template"><?php echo $button_name; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{LastName}" data-target="input-message-template"><?php echo $button_lastname; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{Comment}" data-target="input-message-template"><?php echo $button_comment; ?></button>
 						</div>
 						<textarea name="smsnot-message-template" rows="5" placeholder="<?php echo $entry_message_template; ?>" id="input-message-template" class="form-control"><?php echo $data['smsnot-message-template']; ?></textarea>
 					</div>
@@ -127,6 +130,9 @@
 						<div class="btn-group-xs btn-group" role="group">
 							<button class="btn btn-default btni" type="button" data-insert="{OrderID}" data-target="input-message-customer"><?php echo $button_orderid; ?></button>
 							<button class="btn btn-default btni" type="button" data-insert="{StoreName}" data-target="input-message-customer"><?php echo $button_storename; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{Total}" data-target="input-message-customer"><?php echo $button_total; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{FirstName}" data-target="input-message-customer"><?php echo $button_name; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{LastName}" data-target="input-message-customer"><?php echo $button_lastname; ?></button>
 						</div>
 						<textarea name="smsnot-message-customer" rows="5" placeholder="<?php echo $entry_message_customer; ?>" id="input-message-customer" class="form-control"><?php echo $data['smsnot-message-customer']; ?></textarea>
 					</div>
@@ -140,6 +146,12 @@
 							<button class="btn btn-default btni" type="button" data-insert="{OrderID}" data-target="input-message-admin"><?php echo $button_orderid; ?></button>
 							<button class="btn btn-default btni" type="button" data-insert="{StoreName}" data-target="input-message-admin"><?php echo $button_storename; ?></button>
 							<button class="btn btn-default btni" type="button" data-insert="{Total}" data-target="input-message-admin"><?php echo $button_total; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{FirstName}" data-target="input-message-admin"><?php echo $button_name; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{LastName}" data-target="input-message-admin"><?php echo $button_lastname; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{City}" data-target="input-message-admin"><?php echo $button_city; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{Address}" data-target="input-message-admin"><?php echo $button_address; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{Phone}" data-target="input-message-admin"><?php echo $button_phone; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{Comment}" data-target="input-message-admin"><?php echo $button_comment; ?></button>
 						</div>
 						<textarea name="smsnot-message-admin" rows="5" placeholder="<?php echo $entry_message_admin; ?>" id="input-message-admin" class="form-control"><?php echo $data['smsnot-message-admin']; ?></textarea>
 					</div>

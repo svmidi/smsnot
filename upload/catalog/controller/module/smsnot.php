@@ -16,19 +16,18 @@ class ControllerModuleSmsnot extends Controller {
 		$setting = $this->model_setting_setting->getSetting('smsnot');
 
 		if (isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey']))) {
-
+			$total = $this->currency->convert($order_info['total'], $order_info['currency_code'], $order_info['currency_code']);
 			if (isset($setting['smsnot-owner']) && ($setting['smsnot-owner'] == 'on')) {
-				$total = $this->currency->convert($order_info['total'], $order_info['currency_code'], $order_info['currency_code']);
-				$original = array("{StoreName}","{OrderID}", "{Total}");
-				$replace = array($this->config->get('config_name'), $order_id, $total);
+				$original = array("{StoreName}","{OrderID}", "{Total}", "{LastName}", "{FirstName}", "{Phone}", "{City}", "{Address}", "{Comment}");
+				$replace = array($this->config->get('config_name'), $order_id, $total, $order_info['lastname'], $order_info['firstname'], $order_info['telephone'], $order_info['shipping_city'], $order_info['shipping_address_1'], $order_info['comment']);
 
 				$message = str_replace($original, $replace, $setting['smsnot-message-admin']);
 
 				$this->sms_send($setting['smsnot-apikey'], $setting['smsnot-phone'], $message, $setting['smsnot-sender']);
 			}
 			if (isset($setting['smsnot-new-order']) && ($setting['smsnot-new-order'] == 'on')) {
-				$original = array("{StoreName}","{OrderID}");
-				$replace = array($this->config->get('config_name'), $order_id);
+				$original = array("{StoreName}","{OrderID}", "{LastName}", "{FirstName}", "{Total}");
+				$replace = array($this->config->get('config_name'), $order_id, $order_info['lastname'], $order_info['firstname'], $total);
 
 				$message = str_replace($original, $replace, $setting['smsnot-message-customer']);
 				if (preg_match('/(\+|)[0-9]{11,12}/', $order_info['telephone'])) {
@@ -51,10 +50,13 @@ class ControllerModuleSmsnot extends Controller {
 		if(isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey'])) && ($setting['smsnot-order-change'] == 'on')) {
 
 			if ($order_info['order_status_id'] && $this->model_module_smsnot->getHistoryCount($order_id)>1) {
+
+				$total = $this->currency->convert($order_info['total'], $order_info['currency_code'], $order_info['currency_code']);
+				$comment = $this->model_module_smsnot->getHistory($order_id);
 				$status = (isset($order_info['order_status']))?$order_info['order_status']:"";
 
-				$original = array("{StoreName}","{OrderID}","{Status}");
-				$replace = array($this->config->get('config_name'), $order_id, $status);
+				$original = array("{StoreName}","{OrderID}","{Status}", "{LastName}", "{FirstName}", "{Total}", "{Comment}");
+				$replace = array($this->config->get('config_name'), $order_id, $status, $order_info['lastname'], $order_info['firstname'], $total, $comment);
 
 				$message = str_replace($original, $replace, $setting['smsnot-message-template']);
 				

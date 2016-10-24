@@ -16,12 +16,17 @@ class ModelModuleSmsnot extends Model {
 	}
 
 	public function setLogRecord($smsru = array()) {
-
 		$sql = "INSERT INTO  `".DB_PREFIX."smsnot` (`id`,`date`,`status`,`phone`,`sms_id`, `text`) 
 		VALUES (NULL, NOW(), '".$smsru['error']."', '".$smsru['phone']."', '".$smsru['smsru']."', '".$smsru['text']."')";
 
 		$query = $this->db->query($sql);
 		return true;
+	}
+
+	public function getHistory($order_id) {
+		$data = array(); 
+		$query = $this->db->query("SELECT `comment` FROM `" . DB_PREFIX ."order_history` WHERE `order_id` = ". $order_id." ORDER BY `order_history_id` DESC LIMIT 1;");
+		return $query->row['comment'];
 	}
 }
 ?>
