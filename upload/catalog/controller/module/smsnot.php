@@ -16,7 +16,9 @@ class ControllerModuleSmsnot extends Controller {
 		$setting = $this->model_setting_setting->getSetting('smsnot');
 
 		if (isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey']))) {
+
 			$total = $this->currency->convert($order_info['total'], $order_info['currency_code'], $order_info['currency_code']);
+
 			if (isset($setting['smsnot-owner']) && ($setting['smsnot-owner'] == 'on')) {
 				$original = array("{StoreName}","{OrderID}", "{Total}", "{LastName}", "{FirstName}", "{Phone}", "{City}", "{Address}", "{Comment}");
 				$replace = array($this->config->get('config_name'), $order_id, $total, $order_info['lastname'], $order_info['firstname'], $order_info['telephone'], $order_info['shipping_city'], $order_info['shipping_address_1'], $order_info['comment']);
@@ -69,10 +71,10 @@ class ControllerModuleSmsnot extends Controller {
 
 	private function sms_send($api_id, $to=0, $text=0, $sender='') {
 		$param=array(
-		"api_id"	 =>	$api_id,
-		"to"		 =>	$to,
-		"text"		 =>	$text,
-		"from"		 =>	$sender,
+		"api_id"     => $api_id,
+		"to"         => $to,
+		"text"       => $text,
+		"from"       => $sender,
 		"partner_id" => 34316);
 		$ch = curl_init("http://sms.ru/sms/send");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -93,7 +95,7 @@ class ControllerModuleSmsnot extends Controller {
 	private function read_response($response){
 		$this->load->language('module/smsnot');
 		$ex = explode("\n", $response);
-		$result=array();
+		$result = array();
 		if ($ex[0] == 100) {
 			$balance=explode("=", $ex[2]);
 			$result['error'] = 100;
