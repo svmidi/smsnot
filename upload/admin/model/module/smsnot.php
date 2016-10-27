@@ -88,7 +88,7 @@ class ModelModuleSmsnot extends Model {
 
 			$sql .= " LIMIT " . (int)$filter['start'] . "," . (int)$filter['limit'];
 		}
-		echo $sql;
+
 		$query = $this->db->query($sql);
 
 		return $query->rows;
