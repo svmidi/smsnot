@@ -285,8 +285,7 @@
 							<label class="control-label" for="input-status"><?php echo $entry_status; ?></label>
 							<select name="filter_status" id="input-status" class="form-control">
 								<option value="*">*</option>
-								<?php print_r($statuses);
-								foreach ($statuses as $key => $title) {
+								<?php foreach ($statuses as $key => $title) {
 								echo '<option value="'.$key.'">'.$title.'</option>';
 								} ?>
 							</select>
@@ -456,7 +455,7 @@ $( document ).ready(function() {
 		$('#log').load(this.href);
 	});
 
-	$('#log').load('http://cartest.43vp.ru/admin/index.php?route=module/smsnot/log&token=<?php echo $token; ?>');
+	$('#log').load('index.php?route=module/smsnot/log&token=<?php echo $token; ?>');
 
 	
 
@@ -497,18 +496,9 @@ $('#button-filte').on('click', function(e) {
 	if (filter_date_stop) {
 		url += '&filter_date_stop=' + encodeURIComponent(filter_date_stop);
 	}
-/*
-	alert(url)
-	//location = url;*/
+
 	$('#log').load(url);
 });
-
-
-
-
-
-
-
 
 });
 </script>
