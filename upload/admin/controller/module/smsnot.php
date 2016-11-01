@@ -372,11 +372,10 @@ class ControllerModuleSmsnot extends Controller {
 
 				$this->load->model('module/smsnot');
 				$resp['phone'] = $this->request->post['to'];
-				$json = json_encode($resp);
 				$this->model_module_smsnot->setLogRecord($resp);
 			}
 		}
-		$this->response->setOutput(json_encode($json));
+		$this->response->setOutput(json_encode($resp));
 	}
 
 	public function balance(){
