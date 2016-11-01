@@ -316,7 +316,7 @@ class ControllerModuleSmsnot extends Controller {
 		$this->model_module_smsnot->install();
 		$this->load->model('extension/event');
 
-		if(strcmp(VERSION,"2.1.0.2") < 0) {
+		if (strcmp(substr(VERSION, 0, 7), "2.1.0.2") <= 0) {
 			$this->model_extension_event->addEvent('smsnot', 'post.order.add', 'module/smsnot/onCheckout');
 			$this->model_extension_event->addEvent('smsnot', 'post.order.history.add', 'module/smsnot/onHistoryChange');
 		} else {
