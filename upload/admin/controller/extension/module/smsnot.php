@@ -1,5 +1,5 @@
 <?php
-class ControllerModuleSmsnot extends Controller {
+class ControllerExtensionModuleSmsnot extends Controller {
 	private $data = array();
 
 	private $error_array = array(
@@ -23,7 +23,8 @@ class ControllerModuleSmsnot extends Controller {
 		301 =>"Неправильный пароль, либо пользователь не найден",
 		302 =>"Пользователь авторизован, но аккаунт не подтвержден (пользователь не ввел код, присланный в регистрационной смс)");
 
-	private $status_array = array(-1	 => 'Cообщение не найдено.',
+	private $status_array = array(
+		-1	 => 'Cообщение не найдено.',
 		100 => 'В очереди',
 		101 => 'Передается оператору',
 		102 => 'Отправлено (в пути)',
@@ -57,19 +58,18 @@ class ControllerModuleSmsnot extends Controller {
 		$this->document->setTitle($this->language->get('heading_title'));
 
 		if(!isset($this->request->get['store_id'])) {
-			$this->request->get['store_id'] = 0; 
+			$this->request->get['store_id'] = 0;
 		}
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
-			if (!$this->user->hasPermission('modify', 'module/smsnot')) {
+			if (!$this->user->hasPermission('modify', 'extension/module/smsnot')) {
 				$this->error['warning'] = $this->language->get('error_permission');
 				$this->session->data['error'] = 'You do not have permissions to edit this module!';
 			} else {
-				//print_r($this->request->post); exit;
 				$this->model_setting_setting->editSetting('smsnot', $this->request->post, 0);
 				$this->session->data['success'] = $this->language->get('text_success');
 			}
-			$this->response->redirect(HTTP_SERVER.'index.php?route=module/smsnot&store_id='.$this->request->get['store_id'] . '&token=' . $this->session->data['token']);
+			$this->response->redirect(HTTP_SERVER.'index.php?route=extension/module/smsnot&store_id='.$this->request->get['store_id'] . '&token=' . $this->session->data['token']);
 		}
 
 		if (isset($this->session->data['success'])) {
@@ -101,7 +101,7 @@ class ControllerModuleSmsnot extends Controller {
 			'text' => $this->language->get('heading_title'),
 			'href' => $this->url->link('module/smsnot', 'token=' . $this->session->data['token'], 'SSL'),
 		);
-		
+
 		$this->data['heading_title'] = $this->language->get('heading_title');
 		$this->data['button_save'] = $this->language->get('button_save');
 		$this->data['button_cancel'] = $this->language->get('button_cancel');
@@ -121,7 +121,6 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['button_download'] = $this->language->get('button_download');
 		$this->data['button_clear'] = $this->language->get('button_clear');
 		$this->data['button_filter'] = $this->language->get('button_filter');
-
 
 		$this->data['tab_sending'] = $this->language->get('tab_sending');
 		$this->data['tab_notice'] = $this->language->get('tab_notice');
@@ -174,13 +173,13 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['entry_text'] = $this->language->get('entry_text');
 		$this->data['entry_smsnot_log'] = $this->language->get('entry_smsnot_log');
 
-		$this->data['error_warning']  = '';
-		$this->data['action']         = $this->url->link('module/smsnot', 'token=' . $this->session->data['token'], 'SSL');
-		$this->data['cancel']         = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
+		$this->data['error_warning'] = '';
+		$this->data['action'] = $this->url->link('extension/module/smsnot', 'token=' . $this->session->data['token'], 'SSL');
+		$this->data['cancel'] = $this->url->link('extension/extension', 'token=' . $this->session->data['token'], 'SSL');
 
-		$this->data['data']           = $this->model_setting_setting->getSetting('smsnot');
-		$this->data['balance']        = 0;
-		$this->data['token']          = $this->session->data['token'];
+		$this->data['data'] = $this->model_setting_setting->getSetting('smsnot');
+		$this->data['balance'] = 0;
+		$this->data['token'] = $this->session->data['token'];
 		$this->data['log_href'] = $this->url->link('module/smsnot/log', 'token=' . $this->session->data['token']);
 		$this->data['token'] = $this->session->data['token'];
 
@@ -188,12 +187,11 @@ class ControllerModuleSmsnot extends Controller {
 
 		$this->data['callback'] = str_replace("/admin", "", $this->url->link('api/smscallback', '', 'SSL'));
 
-
 		if ($this->data['data']['smsnot-apikey']!='') {
 			$balance = $this->get_balance($this->data['data']['smsnot-apikey']);
 			$this->data['balance'] = (in_array('balance', $balance))?$balance['balance']:'-';
 		}
-		
+
 		if(strcmp(VERSION,"2.1.0.1") < 0) {
 			$this->load->model('sale/customer_group');
 			$this->data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups(0);
@@ -202,9 +200,9 @@ class ControllerModuleSmsnot extends Controller {
 			$this->data['customer_groups'] = $this->model_customer_customer_group->getCustomerGroups(0);
 		}
 
-		$this->data['header']		= $this->load->controller('common/header');
-		$this->data['column_left']	= $this->load->controller('common/column_left');
-		$this->data['footer']		= $this->load->controller('common/footer');
+		$this->data['header'] = $this->load->controller('common/header');
+		$this->data['column_left'] = $this->load->controller('common/column_left');
+		$this->data['footer'] = $this->load->controller('common/footer');
 		$this->response->setOutput($this->load->view('module/smsnot.tpl', $this->data));
 	}
 
@@ -263,7 +261,6 @@ class ControllerModuleSmsnot extends Controller {
 
 		$this->data['text_no_results'] = $this->language->get('text_no_result');
 
-
 		if (isset($this->request->get['order'])) {
 			$order = $this->request->get['order'];
 		} else {
@@ -287,15 +284,15 @@ class ControllerModuleSmsnot extends Controller {
 		$this->load->model('module/smsnot');
 
 		$filter_data = array(
-			'filter_text'              => $filter_text,
-			'filter_phone'             => $filter_phone,
-			'filter_date_start'        => $filter_date_start,
-			'filter_date_stop'         => $filter_date_stop,
-			'filter_status'            => $filter_status,
-			'sort'                     => $sort,
-			'order'                    => $order,
-			'start'                    => ($page - 1) * $this->config->get('config_limit_admin'),
-			'limit'                    => $this->config->get('config_limit_admin')
+			'filter_text'       => $filter_text,
+			'filter_phone'      => $filter_phone,
+			'filter_date_start' => $filter_date_start,
+			'filter_date_stop'  => $filter_date_stop,
+			'filter_status'     => $filter_status,
+			'sort'              => $sort,
+			'order'             => $order,
+			'start'             => ($page - 1) * $this->config->get('config_limit_admin'),
+			'limit'             => $this->config->get('config_limit_admin')
 		);
 
 		$this->data['sends'] = $this->model_module_smsnot->getLogRecords($filter_data);
@@ -319,7 +316,7 @@ class ControllerModuleSmsnot extends Controller {
 		$this->model_module_smsnot->install();
 		$this->load->model('extension/event');
 
-		if (strcmp(substr(VERSION, 0, 7), "2.1.0.2") <= 0) {
+		if(strcmp(VERSION,"2.1.0.2") < 0) {
 			$this->model_extension_event->addEvent('smsnot', 'post.order.add', 'module/smsnot/onCheckout');
 			$this->model_extension_event->addEvent('smsnot', 'post.order.history.add', 'module/smsnot/onHistoryChange');
 		} else {
@@ -329,17 +326,17 @@ class ControllerModuleSmsnot extends Controller {
 
 		$this->load->model('setting/setting');
 		$basic=array(
-		'smsnot-sender'=>'',
-		'smsnot-phone'=>'',
-		'smsnot-apikey'=>'',
-		'smsnot-message-template'=>'Order №{OrderID} in {StoreName}, changed status to {Status}',
-		'smsnot-message-customer'=>'New order №{OrderID} in {StoreName}',
-		'smsnot-message-admin'=>'New order #{OrderID} at the store "{StoreName}". Total {Total}',
-		'smsnot-order-change'=>0,
-		'smsnot-new-order'=>0,
-		'smsnot-owner'=>0,
-		'smsnot-log'=>0,
-		'smsnot-enabled'=>0);
+		'smsnot-sender'           => '',
+		'smsnot-phone'            => '',
+		'smsnot-apikey'           => '',
+		'smsnot-message-template' => 'Order №{OrderID} in {StoreName}, changed status to {Status}',
+		'smsnot-message-customer' => 'New order №{OrderID} in {StoreName}',
+		'smsnot-message-admin'    => 'New order #{OrderID} at the store "{StoreName}". Total {Total}',
+		'smsnot-order-change'     => 0,
+		'smsnot-new-order'        => 0,
+		'smsnot-owner'            => 0,
+		'smsnot-log'              => 0,
+		'smsnot-enabled'          => 0);
 		$this->model_setting_setting->editSetting('smsnot', $basic, 0);
 	}
 
@@ -362,7 +359,7 @@ class ControllerModuleSmsnot extends Controller {
 	public function send() {
 		$json = array();
 		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
-			if (!$this->user->hasPermission('modify', 'module/smsnot')) {
+			if (!$this->user->hasPermission('modify', 'extension/module/smsnot')) {
 				$json['error'] = 403;
 				$json['text'] = 'You do not have permission to perform this action!';
 			}
@@ -382,7 +379,7 @@ class ControllerModuleSmsnot extends Controller {
 	}
 
 	public function balance(){
-		if (!$this->user->hasPermission('modify', 'module/smsnot')) {
+		if (!$this->user->hasPermission('modify', 'extension/module/smsnot')) {
 			$json['error'] = 403;
 			$json['text'] = 'You do not have permission to perform this action!';
 		} else {
@@ -497,7 +494,6 @@ class ControllerModuleSmsnot extends Controller {
 		"to"         => $to,
 		"text"       => $text,
 		"from"       => $sender,
-		'test'       => 1,
 		"partner_id" => 34316);
 		$ch = curl_init("http://sms.ru/sms/send");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -529,7 +525,7 @@ class ControllerModuleSmsnot extends Controller {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, array(
-			"api_id"	=>	$api_key
+			"api_id" => $api_key
 		));
 		$response = curl_exec($ch);
 		curl_close($ch);
