@@ -56,9 +56,18 @@
 					<div class="col-sm-10">
 						<select name="input_to" id="input-to" class="form-control">
 							<option value="0"><?php echo $text_all; ?></option>
+							<option value="4"><?php echo $text_arbitrary; ?></option>
 							<option value="1"><?php echo $text_newsletter; ?></option>
 						<?php echo $option_all.$option_news; ?>
 						</select>
+					</div>
+				</div>
+				<div class="form-group hide" id="arbitrary">
+					<label class="col-sm-2 control-label" for="input-arbitrary">
+						<span data-toggle="tooltip" data-original-title="<?php echo $help_arbitrary; ?>"><?php echo $entry_arbitrary; ?></span>
+					</label>
+					<div class="col-sm-10">
+						<input name="input_arbitrary" id="input-arbitrary" class="form-control digitOnly" value="" placeholder="<?php echo $entry_arbitrary; ?>">
 					</div>
 				</div>
 				<div class="form-group">
@@ -75,9 +84,9 @@
 								<div>SMS: <span id="countSMS">1</span></div>
 							</div>
 							<div class="col-sm-6 btn-group" role="group">
-								<button class="btn btn-default btni" type="button" data-insert="{StoreName}" data-target="input-message"><?php echo $button_storename; ?></button>
-								<button class="btn btn-default btni" type="button" data-insert="{Name}" data-target="input-message"><?php echo $button_name; ?></button>
-								<button class="btn btn-default btni" type="button" data-insert="{LastName}" data-target="input-message"><?php echo $button_lastname; ?></button>
+								<button class="btn btn-default btni mas" type="button" data-insert="{StoreName}" data-target="input-message"><?php echo $button_storename; ?></button>
+								<button class="btn btn-default btni mas" type="button" data-insert="{Name}" data-target="input-message"><?php echo $button_name; ?></button>
+								<button class="btn btn-default btni mas" type="button" data-insert="{LastName}" data-target="input-message"><?php echo $button_lastname; ?></button>
 							</div>
 						</div>
 						<textarea name="input-message" rows="5" placeholder="<?php echo $entry_message; ?>" id="input-message" class="form-control"></textarea>
@@ -340,6 +349,7 @@ $( document ).ready(function() {
 		$('#countSMS').html(smsc);
 		return false;
 	});
+
 	$(".digitOnly").keyup(function (){
 		$(this).val($(this).val().replace(/[^\d]/g, ''));
 	});
@@ -367,9 +377,6 @@ $( document ).ready(function() {
 		});
 	});
 
-
-
-
 	$("#balance").click(function(){
 		var data="&api="+$('#input-apikey').val();
 		var btn = $(this);
@@ -390,8 +397,21 @@ $( document ).ready(function() {
 		});
 	});
 
+	$('#input-to').change(function(){
+		if ($(this).val() == 4) {
+			$("#arbitrary").removeClass('hide');
+			$("#arbitrary").addClass('show');
+			$('.mas').addClass('disabled');
+		} else {
+			$("#arbitrary").removeClass('show');
+			$("#arbitrary").addClass('hide');
+			$('.mas').removeClass('disabled');
+
+		}
+	});
+
 	$("#send").click(function(){
-		var data="&sender="+$('#input-sender').val()+"&api="+$('#input-apikey').val()+"&message="+$('#input-message').val()+"&to="+$('#input-to').val();
+		var data="&sender="+$('#input-sender').val()+"&api="+$('#input-apikey').val()+"&message="+$('#input-message').val()+"&to="+$('#input-to').val()+"&arbitrary="+$('#input-arbitrary').val();
 		var btn = $(this);
 		btn.button('loading');
 		$.ajax({

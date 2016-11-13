@@ -129,6 +129,7 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['tab_log'] = $this->language->get('tab_log');
 
 		$this->data['entry_to'] = $this->language->get('entry_to');
+		$this->data['entry_arbitrary'] = $this->language->get('entry_arbitrary');
 		$this->data['entry_sender'] = $this->language->get('entry_sender');
 		$this->data['entry_message'] = $this->language->get('entry_message');
 		$this->data['entry_enabled'] = $this->language->get('entry_enabled');
@@ -154,12 +155,14 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['text_money_add'] = $this->language->get('text_money_add');
 		$this->data['text_refresh'] = $this->language->get('text_refresh');
 		$this->data['text_log_disabled'] = $this->language->get('text_log_disabled');
+		$this->data['text_arbitrary'] = $this->language->get('text_arbitrary');
 
 		$this->data['help_message_template'] = $this->language->get('help_message_template');
 		$this->data['help_message_customer'] = $this->language->get('help_message_customer');
 		$this->data['help_message_admin'] = $this->language->get('help_message_admin');
 		$this->data['help_message'] = $this->language->get('help_message');
 		$this->data['help_sure'] = $this->language->get('help_sure');
+		$this->data['help_arbitrary'] = $this->language->get('help_arbitrary');
 		$this->data['help_callback'] = $this->language->get('help_callback');
 
 		$this->data['entry_date_start'] = $this->language->get('entry_date_start');
@@ -422,59 +425,80 @@ class ControllerModuleSmsnot extends Controller {
 					$type = intval($this->request->post['to'] / 100);
 					$filter['filter_group'] = $group;
 				}
-				if ($type == 3)
+				if ((isset($type)) AND ($type == 3))
 					$filter['filter_newsletter'] = 1;
 				if ($this->request->post['to'] == 1)
 					$filter['filter_newsletter'] = 1;
 
-				$customers = $this->model_module_smsnot->getPhones($filter);
-				$query = '';
-				$i = 0;
-				foreach ($customers as $customer) {
-					if (preg_match('/(\+|)[0-9]{11}/', $customer['telephone'])) {
-						$i++;
-						$original = array("{StoreName}", "{Name}", "{LastName}");
-						$replace = array($this->config->get('config_name'), $customer['firstname'], $customer['lastname']);
-						$message = str_replace($original, $replace, $this->request->post['message']);
-						$query.='&multi['.$customer['telephone'].']='.$message;
-						if ($i>99) {
-							$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
-							$query = '';
-							$i = 0;
+				if (($this->request->post['to'] != 4) AND ($this->request->post['arbitrary'])) {
+
+					$customers = $this->model_module_smsnot->getPhones($filter);
+					$query = '';
+					$i = 0;
+					foreach ($customers as $customer) {
+						if (preg_match('/(\+|)[0-9]{11,12}/', $customer['telephone'])) {
+							$i++;
+							$original = array("{StoreName}", "{Name}", "{LastName}");
+							$replace = array($this->config->get('config_name'), $customer['firstname'], $customer['lastname']);
+							$message = str_replace($original, $replace, $this->request->post['message']);
+							$query.='&multi['.$customer['telephone'].']='.$message;
+							if ($i>99) {
+								$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
+								$query = '';
+								$i = 0;
+							}
 						}
 					}
+					$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
+				} else {
+					$phones = explode(',', $this->request->post['arbitrary']);
+					$query = array();
+					foreach ($phones as $phone) {
+						$phone = trim($phone);
+						if (preg_match('/(\+|)[0-9]{11,12}/', $phone)) {
+							$original = array("{StoreName}", "{Name}", "{LastName}");
+							$replace = array($this->config->get('config_name'), '', '');
+							$message = str_replace($original, $replace, $this->request->post['message']);
+							$query[$phone] = $message;
+						}
+					}
+					$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
 				}
-				$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
 			}
 		}
 		$this->response->setOutput(json_encode($json));
 	}
 
 	private function read_response($response){
-		$this->load->language('module/smsnot');
-		$ex = explode("\n", $response);
 		$result=array();
-		if ($ex[0] == 100) {
-			$balance=explode("=", $ex[2]);
-			$result['error'] = 100;
-			$result['smsru'] = $ex[1];
-			$result['balance'] = $balance[1];
-			$result['text'] = $this->language->get('text_send_success');
+		if ($response) {
+			$this->load->language('module/smsnot');
+			$ex = explode("\n", $response);
+			if ($ex[0] == 100) {
+				$balance=explode("=", $ex[2]);
+				$result['error'] = 100;
+				$result['smsru'] = $ex[1];
+				$result['balance'] = $balance[1];
+				$result['text'] = $this->language->get('text_send_success');
+			} else {
+				$result['error'] = $ex[0];
+				$result['text'] = $this->language->get('text_send_error').' ('.$this->error_array[$ex[0]].')';
+			}
 		} else {
-			$result['error'] = $ex[0];
-			$result['text'] = $this->language->get('text_send_error').' ('.$this->error_array[$ex[0]].')';
+			$result['error'] = 500;
+			$result['text'] = $this->language->get('text_send_error').' (Unknown error)';
 		}
 		return $result;
 	}
 
 	private function sms_send($api_id, $to=0, $text=0, $sender='') {
 		$param = array(
-		"api_id"		=> $api_id,
-		"to"			=> $to,
-		"text"			=> $text,
-		"from"			=> $sender,
-		'test'          => 1,
-		"partner_id"	=> 34316);
+		"api_id"     => $api_id,
+		"to"         => $to,
+		"text"       => $text,
+		"from"       => $sender,
+		'test'       => 1,
+		"partner_id" => 34316);
 		$ch = curl_init("http://sms.ru/sms/send");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
@@ -486,14 +510,15 @@ class ControllerModuleSmsnot extends Controller {
 
 	private function sms_multisend($api_id, $text, $sender='') {
 		$param = array(
-		"api_id"		=>	$api_id,
-		"multi"			=>	$text,
-		"from"			=>	$sender,
-		"partner_id"	=> 34316);
+		"api_id"     => $api_id,
+		"multi"      => $text,
+		"from"       => $sender,
+		"partner_id" => 34316);
+		$send = http_build_query($param);
 		$ch = curl_init("http://sms.ru/sms/send");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $send);
 		$result = curl_exec($ch);
 		curl_close($ch);
 		return $this->read_response($result);
