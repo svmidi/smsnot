@@ -51,7 +51,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 	public function index() {
 
 		$this->load->language('module/smsnot');
-		$this->load->model('module/smsnot');
+		$this->load->model('extension/module/smsnot');
 		$this->load->model('localisation/language');
 		$this->load->model('setting/setting');
 
@@ -99,7 +99,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		);
 		$this->data['breadcrumbs'][] = array(
 			'text' => $this->language->get('heading_title'),
-			'href' => $this->url->link('module/smsnot', 'token=' . $this->session->data['token'], 'SSL'),
+			'href' => $this->url->link('extension/module/smsnot', 'token=' . $this->session->data['token'], 'SSL'),
 		);
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
@@ -180,7 +180,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		$this->data['data'] = $this->model_setting_setting->getSetting('smsnot');
 		$this->data['balance'] = 0;
 		$this->data['token'] = $this->session->data['token'];
-		$this->data['log_href'] = $this->url->link('module/smsnot/log', 'token=' . $this->session->data['token']);
+		$this->data['log_href'] = $this->url->link('extension/module/smsnot/log', 'token=' . $this->session->data['token']);
 		$this->data['token'] = $this->session->data['token'];
 
 		$this->data['statuses'] = $this->status_array;
@@ -203,7 +203,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		$this->data['header'] = $this->load->controller('common/header');
 		$this->data['column_left'] = $this->load->controller('common/column_left');
 		$this->data['footer'] = $this->load->controller('common/footer');
-		$this->response->setOutput($this->load->view('module/smsnot.tpl', $this->data));
+		$this->response->setOutput($this->load->view('extension/module/smsnot.tpl', $this->data));
 	}
 
 	public function log() {
@@ -279,9 +279,9 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		} else {
 			$order = 'ASC';
 		}
-		$this->data['date'] = $this->url->link('module/smsnot/log', 'token=' . $this->session->data['token'] . $url . '&sort=id&order='.$order, true);
+		$this->data['date'] = $this->url->link('extension/module/smsnot/log', 'token=' . $this->session->data['token'] . $url . '&sort=id&order='.$order, true);
 
-		$this->load->model('module/smsnot');
+		$this->load->model('extension/module/smsnot');
 
 		$filter_data = array(
 			'filter_text'       => $filter_text,
@@ -295,34 +295,29 @@ class ControllerExtensionModuleSmsnot extends Controller {
 			'limit'             => $this->config->get('config_limit_admin')
 		);
 
-		$this->data['sends'] = $this->model_module_smsnot->getLogRecords($filter_data);
-		$total = $this->model_module_smsnot->getLogRecordsTotal($filter_data);
+		$this->data['sends'] = $this->model_extension_module_smsnot->getLogRecords($filter_data);
+		$total = $this->model_extension_module_smsnot->getLogRecordsTotal($filter_data);
 
 		$pagination = new Pagination();
 		$pagination->total = $total;
 		$pagination->page = $page;
 		$pagination->limit = $this->config->get('config_limit_admin');
-		$pagination->url = $this->url->link('module/smsnot/log', 'token=' . $this->session->data['token'] . $url . '&page={page}', true);
+		$pagination->url = $this->url->link('extension/module/smsnot/log', 'token=' . $this->session->data['token'] . $url . '&page={page}', true);
 
 		$this->data['pagination'] = $pagination->render();
 
 		$this->data['results'] = sprintf($this->language->get('text_pagination'), ($total) ? (($page - 1) * $this->config->get('config_limit_admin')) + 1 : 0, ((($page - 1) * $this->config->get('config_limit_admin')) > ($total - $this->config->get('config_limit_admin'))) ? $total : ((($page - 1) * $this->config->get('config_limit_admin')) + $this->config->get('config_limit_admin')), $total, ceil($total / $this->config->get('config_limit_admin')));
 
-		$this->response->setOutput($this->load->view('module/smsnot_log.tpl', $this->data));
+		$this->response->setOutput($this->load->view('extension/module/smsnot_log.tpl', $this->data));
 	}
 
 	public function install() {
-		$this->load->model('module/smsnot');
-		$this->model_module_smsnot->install();
+		$this->load->model('extension/module/smsnot');
+		$this->model_extension_module_smsnot->install();
 		$this->load->model('extension/event');
 
-		if(strcmp(VERSION,"2.1.0.2") < 0) {
-			$this->model_extension_event->addEvent('smsnot', 'post.order.add', 'module/smsnot/onCheckout');
-			$this->model_extension_event->addEvent('smsnot', 'post.order.history.add', 'module/smsnot/onHistoryChange');
-		} else {
-			$this->model_extension_event->addEvent('smsnot', 'catalog/controller/checkout/success/before', 'module/smsnot/onCheckout');
-			$this->model_extension_event->addEvent('smsnot', 'catalog/model/checkout/order/addOrderHistory/after', 'module/smsnot/onHistoryChange');
-		}
+		$this->model_extension_event->addEvent('smsnot', 'catalog/controller/checkout/success/before', 'extension/module/smsnot/onCheckout');
+		$this->model_extension_event->addEvent('smsnot', 'catalog/model/checkout/order/addOrderHistory/after', 'extension/module/smsnot/onHistoryChange');
 
 		$this->load->model('setting/setting');
 		$basic=array(
@@ -349,8 +344,8 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		foreach ($stores as $store) {
 			$this->model_setting_setting->deleteSetting('smsnot_module', $store['store_id']);
 		}
-		$this->load->model('module/smsnot');
-		$this->model_module_smsnot->uninstall();
+		$this->load->model('extension/module/smsnot');
+		$this->model_extension_module_smsnot->uninstall();
 		$this->load->model('extension/event');
 		$this->model_extension_event->deleteEvent('smsnot');
 	}
@@ -365,14 +360,14 @@ class ControllerExtensionModuleSmsnot extends Controller {
 			}
 			if (!$this->request->post['message']) {
 				$json['error'] = 404;
-				$json['message'] = 'The message field should not be empty!';
+				$json['text'] = 'The message field should not be empty!';
 			}
 			if (!$json) {
 				$resp = $this->sms_send($this->request->post['api'],$this->request->post['to'],$this->request->post['message'],$this->request->post['sender']);
 
-				$this->load->model('module/smsnot');
+				$this->load->model('extension/module/smsnot');
 				$resp['phone'] = $this->request->post['to'];
-				$this->model_module_smsnot->setLogRecord($resp);
+				$this->model_extension_module_smsnot->setLogRecord($resp);
 			}
 		}
 		$this->response->setOutput(json_encode($resp));
@@ -398,18 +393,18 @@ class ControllerExtensionModuleSmsnot extends Controller {
 	}
 
 	public function massend() {
-		$this->load->model('module/smsnot');
+		$this->load->model('extension/module/smsnot');
 		$this->load->model('setting/setting');
 		$settings = $this->model_setting_setting->getSetting('smsnot');
 		$json = array();
 		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
-			if (!$this->user->hasPermission('modify', 'module/smsnot')) {
+			if (!$this->user->hasPermission('modify', 'extension/module/smsnot')) {
 				$json['error'] = 403;
 				$json['text'] = 'You do not have permission to perform this action!';
 			}
 			if (!$this->request->post['message']) {
 				$json['error'] = 404;
-				$json['message'] = 'The message field should not be empty!';
+				$json['text'] = 'The message field should not be empty!';
 			}
 			if (!$json) {
 				$filter = array();
@@ -429,7 +424,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 
 				if (($this->request->post['to'] != 4) AND ($this->request->post['arbitrary'])) {
 
-					$customers = $this->model_module_smsnot->getPhones($filter);
+					$customers = $this->model_extension_module_smsnot->getPhones($filter);
 					$query = '';
 					$i = 0;
 					foreach ($customers as $customer) {

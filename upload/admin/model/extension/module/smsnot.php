@@ -1,5 +1,5 @@
 <?php 
-class ModelModuleSmsnot extends Model {
+class ModelExtensionModuleSmsnot extends Model {
 	
 	public function install() {
 		$sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "smsnot` (`id` int(11) NOT NULL AUTO_INCREMENT, `text` text NOT NULL, `date` datetime NOT NULL, `sms_id` tinytext NOT NULL, `status` int(11) NOT NULL, `phone` tinytext NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=32;";
