@@ -65,7 +65,6 @@ class ControllerModuleSmsnot extends Controller {
 				$this->error['warning'] = $this->language->get('error_permission');
 				$this->session->data['error'] = 'You do not have permissions to edit this module!';
 			} else {
-				//print_r($this->request->post); exit;
 				$this->model_setting_setting->editSetting('smsnot', $this->request->post, 0);
 				$this->session->data['success'] = $this->language->get('text_success');
 			}
@@ -121,7 +120,6 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['button_download'] = $this->language->get('button_download');
 		$this->data['button_clear'] = $this->language->get('button_clear');
 		$this->data['button_filter'] = $this->language->get('button_filter');
-
 
 		$this->data['tab_sending'] = $this->language->get('tab_sending');
 		$this->data['tab_notice'] = $this->language->get('tab_notice');
@@ -368,7 +366,7 @@ class ControllerModuleSmsnot extends Controller {
 			}
 			if (!$this->request->post['message']) {
 				$json['error'] = 404;
-				$json['message'] = 'The message field should not be empty!';
+				$json['text'] = 'The message field should not be empty!';
 			}
 			if (!$json) {
 				$resp = $this->sms_send($this->request->post['api'],$this->request->post['to'],$this->request->post['message'],$this->request->post['sender']);
@@ -412,7 +410,7 @@ class ControllerModuleSmsnot extends Controller {
 			}
 			if (!$this->request->post['message']) {
 				$json['error'] = 404;
-				$json['message'] = 'The message field should not be empty!';
+				$json['text'] = 'The message field should not be empty!';
 			}
 			if (!$json) {
 				$filter = array();

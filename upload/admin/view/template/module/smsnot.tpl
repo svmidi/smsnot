@@ -411,25 +411,30 @@ $( document ).ready(function() {
 	});
 
 	$("#send").click(function(){
-		var data="&sender="+$('#input-sender').val()+"&api="+$('#input-apikey').val()+"&message="+$('#input-message').val()+"&to="+$('#input-to').val()+"&arbitrary="+$('#input-arbitrary').val();
-		var btn = $(this);
-		btn.button('loading');
-		$.ajax({
-			type: "POST",
-			url: "index.php?route=module/smsnot/massend&token=<?php echo $token; ?>",
-			cache: false,
-			data: data,
-			success: function(html){
-				var jsonData = JSON.parse(html);
-				if (jsonData['error'] != 100) {
-					$('#multi-result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
-				} else {
-					$('#multi-result').html('<div class="alert alert-success">'+jsonData['text']+'</div>');
-					$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
-				}
-				btn.button('reset');
-			},
-		});
+		if (($('#input-to option:selected').val() == 4) && ($('#input-arbitrary').val().length < 11)) {
+			$('#arbitrary').addClass('has-error');
+		} else {
+			$('#arbitrary').removeClass('has-error');
+			var data="&sender="+$('#input-sender').val()+"&api="+$('#input-apikey').val()+"&message="+$('#input-message').val()+"&to="+$('#input-to option:selected').val()+"&arbitrary="+$('#input-arbitrary').val();
+			var btn = $(this);
+			btn.button('loading');
+			$.ajax({
+				type: "POST",
+				url: "index.php?route=module/smsnot/massend&token=<?php echo $token; ?>",
+				cache: false,
+				data: data,
+				success: function(html){
+					var jsonData = JSON.parse(html);
+					if (jsonData['error'] != 100) {
+						$('#multi-result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
+					} else {
+						$('#multi-result').html('<div class="alert alert-success">'+jsonData['text']+'</div>');
+						$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
+					}
+					btn.button('reset');
+				},
+			});
+		}
 	});
 	jQuery.fn.extend({
 		insertAtCaret: function(myValue){
