@@ -425,7 +425,7 @@ $( document ).ready(function() {
 				data: data,
 				success: function(html){
 					var jsonData = JSON.parse(html);
-					if (jsonData['error']) {
+					if (jsonData['error']!=100) {
 						$('#multi-result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
 					} else {
 						$('#multi-result').html('<div class="alert alert-success">'+jsonData['text']+'</div>');

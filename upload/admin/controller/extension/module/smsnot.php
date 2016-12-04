@@ -427,17 +427,23 @@ class ControllerExtensionModuleSmsnot extends Controller {
 					$customers = $this->model_extension_module_smsnot->getPhones($filter);
 					$query = '';
 					$i = 0;
+					$log_phone = '';
 					foreach ($customers as $customer) {
 						if (preg_match('/(\+|)[0-9]{11,12}/', $customer['telephone'])) {
 							$i++;
 							$original = array("{StoreName}", "{Name}", "{LastName}");
 							$replace = array($this->config->get('config_name'), $customer['firstname'], $customer['lastname']);
 							$message = str_replace($original, $replace, $this->request->post['message']);
-							$query.='&multi['.$customer['telephone'].']='.$message;
+							$query .= '&multi['.$customer['telephone'].']='.$message;
+							$log_phone .= $customer['telephone']." ";
 							if ($i>99) {
 								$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
 								$query = '';
 								$i = 0;
+								$log = $json;
+								$log['phone'] = $log_phone;
+								$log['text'] = $this->request->post['message'];
+								$this->model_extension_module_smsnot->setLogRecord($log);
 							}
 						}
 					}
@@ -445,6 +451,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 				} else {
 					$phones = explode(',', $this->request->post['arbitrary']);
 					$query = array();
+					$log_phone = '';
 					foreach ($phones as $phone) {
 						$phone = trim($phone);
 						if (preg_match('/(\+|)[0-9]{11,12}/', $phone)) {
@@ -452,9 +459,14 @@ class ControllerExtensionModuleSmsnot extends Controller {
 							$replace = array($this->config->get('config_name'), '', '');
 							$message = str_replace($original, $replace, $this->request->post['message']);
 							$query[$phone] = $message;
+							$log_phone .= $phone;
 						}
 					}
 					$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
+					$log = $json;
+					$log['phone'] = $log_phone;
+					$log['text'] = $this->request->post['message'];
+					$this->model_extension_module_smsnot->setLogRecord($log);
 				}
 			}
 		}
