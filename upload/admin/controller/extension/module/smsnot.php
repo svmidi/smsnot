@@ -24,7 +24,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		302 =>"Пользователь авторизован, но аккаунт не подтвержден (пользователь не ввел код, присланный в регистрационной смс)");
 
 	private $status_array = array(
-		-1	 => 'Cообщение не найдено.',
+		-1 => 'Cообщение не найдено.',
 		100 => 'В очереди',
 		101 => 'Передается оператору',
 		102 => 'Отправлено (в пути)',
@@ -50,7 +50,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 
 	public function index() {
 
-		$this->load->language('module/smsnot');
+		$this->load->language('extension/module/smsnot');
 		$this->load->model('extension/module/smsnot');
 		$this->load->model('localisation/language');
 		$this->load->model('setting/setting');
@@ -187,18 +187,13 @@ class ControllerExtensionModuleSmsnot extends Controller {
 
 		$this->data['callback'] = str_replace("/admin", "", $this->url->link('api/smscallback', '', 'SSL'));
 
-		if ($this->data['data']['smsnot-apikey']!='') {
+		if ($this->data['data']['smsnot-apikey'] != '') {
 			$balance = $this->get_balance($this->data['data']['smsnot-apikey']);
 			$this->data['balance'] = (in_array('balance', $balance))?$balance['balance']:'-';
 		}
 
-		if(strcmp(VERSION,"2.1.0.1") < 0) {
-			$this->load->model('sale/customer_group');
-			$this->data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups(0);
-		} else {
-			$this->load->model('customer/customer_group');
-			$this->data['customer_groups'] = $this->model_customer_customer_group->getCustomerGroups(0);
-		}
+		$this->load->model('customer/customer_group');
+		$this->data['customer_groups'] = $this->model_customer_customer_group->getCustomerGroups(0);
 
 		$this->data['header'] = $this->load->controller('common/header');
 		$this->data['column_left'] = $this->load->controller('common/column_left');
@@ -207,7 +202,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 	}
 
 	public function log() {
-		$this->load->language('module/smsnot');
+		$this->load->language('extension/module/smsnot');
 		$this->data['column_date'] = $this->language->get('column_date');
 		$this->data['column_text'] = $this->language->get('column_text');
 		$this->data['column_sms_id'] = $this->language->get('column_sms_id');
@@ -321,17 +316,17 @@ class ControllerExtensionModuleSmsnot extends Controller {
 
 		$this->load->model('setting/setting');
 		$basic=array(
-		'smsnot-sender'           => '',
-		'smsnot-phone'            => '',
-		'smsnot-apikey'           => '',
+		'smsnot-sender' => '',
+		'smsnot-phone' => '',
+		'smsnot-apikey' => '',
 		'smsnot-message-template' => 'Order №{OrderID} in {StoreName}, changed status to {Status}',
 		'smsnot-message-customer' => 'New order №{OrderID} in {StoreName}',
-		'smsnot-message-admin'    => 'New order #{OrderID} at the store "{StoreName}". Total {Total}',
-		'smsnot-order-change'     => 0,
-		'smsnot-new-order'        => 0,
-		'smsnot-owner'            => 0,
-		'smsnot-log'              => 0,
-		'smsnot-enabled'          => 0);
+		'smsnot-message-admin' => 'New order #{OrderID} at the store "{StoreName}". Total {Total}',
+		'smsnot-order-change' => 0,
+		'smsnot-new-order' => 0,
+		'smsnot-owner' => 0,
+		'smsnot-log' => 0,
+		'smsnot-enabled' => 0);
 		$this->model_setting_setting->editSetting('smsnot', $basic, 0);
 	}
 
@@ -349,7 +344,6 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		$this->load->model('extension/event');
 		$this->model_extension_event->deleteEvent('smsnot');
 	}
-
 
 	public function send() {
 		$json = array();
@@ -476,7 +470,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 	private function read_response($response){
 		$result=array();
 		if ($response) {
-			$this->load->language('module/smsnot');
+			$this->load->language('extension/module/smsnot');
 			$ex = explode("\n", $response);
 			if ($ex[0] == 100) {
 				$balance=explode("=", $ex[2]);

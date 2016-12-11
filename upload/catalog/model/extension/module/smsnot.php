@@ -1,5 +1,5 @@
 <?php
-class ModelModuleSmsnot extends Model {
+class ModelExtensionModuleSmsnot extends Model {
 
 	public function getHistoryCount($order_id) {
 		$data = array(); 
@@ -24,7 +24,7 @@ class ModelModuleSmsnot extends Model {
 	}
 
 	public function getHistory($order_id) {
-		$data = array(); 
+		$data = array();
 		$query = $this->db->query("SELECT `comment` FROM `" . DB_PREFIX ."order_history` WHERE `order_id` = ". $order_id." ORDER BY `order_history_id` DESC LIMIT 1;");
 		return $query->row['comment'];
 	}

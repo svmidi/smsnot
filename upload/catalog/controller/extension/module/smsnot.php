@@ -1,14 +1,19 @@
 <?php
-class ControllerModuleSmsnot extends Controller {
+class ControllerExtensionModuleSmsnot extends Controller {
 
 	public function onCheckout($order = 0) {
 		if (is_array($order)) {
 			$order_id = $order['order_id'];
-		} elseif ($order == 0) {
+		} elseif (($order == 0) && (isset($this->session->data['order_id']))) {
 			$order_id = $this->session->data['order_id'];
-		} else {
+		} elseif ($order) {
 			$order_id = $order;
 		}
+
+		if (!is_int($order_id)) {
+			return;
+		}
+
 		$this->load->model('checkout/order');
 		$order_info = $this->model_checkout_order->getOrder($order_id);
 
@@ -38,21 +43,29 @@ class ControllerModuleSmsnot extends Controller {
 	}
 
 	public function onHistoryChange($order_id = 0) {
-		$order_id = ($order_id != 0)?$order_id:$this->request->get['order_id'];
+		if ($order_id == 0) {
+			if (isset($this->request->get['order_id'])) {
+				$order_id = $this->request->get['order_id'];
+			} elseif (isset($this->request->post['order_id'])) {
+				$order_id = $this->request->post['order_id'];
+			} elseif ($this->session->data['order_id']) {
+				$order_id = $this->session->data['order_id'];
+			}
+		}
 
 		$this->load->model('checkout/order');
 		$order_info = $this->model_checkout_order->getOrder($order_id);	
 		$this->load->model('setting/setting');
-		$this->load->model('module/smsnot');
+		$this->load->model('extension/module/smsnot');
 
 		$setting = $this->model_setting_setting->getSetting('smsnot');
 
 		if(isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey'])) && ($setting['smsnot-order-change'] == 'on')) {
 
-			if ($order_info['order_status_id'] && $this->model_module_smsnot->getHistoryCount($order_id)>1) {
+			if ($this->model_extension_module_smsnot->getHistoryCount($order_id) > 1) {
 
 				$total = $this->currency->convert($order_info['total'], $order_info['currency_code'], $order_info['currency_code']);
-				$comment = $this->model_module_smsnot->getHistory($order_id);
+				$comment = $this->model_extension_module_smsnot->getHistory($order_id);
 				$status = (isset($order_info['order_status']))?$order_info['order_status']:"";
 
 				$original = array("{StoreName}","{OrderID}","{Status}", "{LastName}", "{FirstName}", "{Total}", "{Comment}");
@@ -74,32 +87,32 @@ class ControllerModuleSmsnot extends Controller {
 		"text"		 =>	$text,
 		"from"		 =>	$sender,
 		"partner_id" => 34316);
-		/*$ch = curl_init("http://sms.ru/sms/send");
+		$ch = curl_init("http://sms.ru/sms/send");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
 		$result = curl_exec($ch);
 		curl_close($ch);
 
-		$this->load->model('module/smsnot');
+		$this->load->model('extension/module/smsnot');
 		$resp = $this->read_response($result);
 		$resp['phone'] = $to;
 		$resp['text'] = $text;
-		$this->model_module_smsnot->setLogRecord($resp);
+		$this->model_extension_module_smsnot->setLogRecord($resp);
 
-		return $result;*/
-		$log = new Log('smsnot_log.txt');
-		$log->write('login('.$param["api_id"].'), phone('.$param["to"].'), text('.$param["text"].'), sender('.$param["from"].'): catalog-module');
+		return $result;
+
+		/*$log = new Log('smsnot_log.txt');
+		$log->write('login('.$param["api_id"].'), phone('.$param["to"].'), text('.$param["text"].'), sender('.$param["from"].'): catalog');
 
 		$json['error'] = 0;
 		$json['phone'] = 0;
 
 		$json['balance'] = 1;
-		return $json;
+		return $json;*/
 	}
 
 	private function read_response($response){
-		$this->load->language('module/smsnot');
 		$ex = explode("\n", $response);
 		$result=array();
 		if ($ex[0] == 100) {
@@ -107,10 +120,8 @@ class ControllerModuleSmsnot extends Controller {
 			$result['error'] = 100;
 			$result['smsru'] = $ex[1];
 			$result['balance'] = $balance[1];
-			$result['text'] = $this->language->get('text_send_success');
 		} else {
 			$result['error'] = $ex[0];
-			$result['text'] = $this->language->get('text_send_error').' ('.$this->error_array[$ex[0]].')';
 		}
 		return $result;
 	}
