@@ -318,9 +318,9 @@
 </div>
 
 <script type="text/javascript">
-$( document ).ready(function() {
+$(document).ready(function() {
 
-	$("#input-smsnot-log").on('click change', function(){
+	$("#input-smsnot-log").on('click change', function() {
 		if ($("#input-smsnot-log").prop("checked")) {
 			$("#help-callback").addClass('show');
 			$("#help-callback").removeClass('hidden');
@@ -328,34 +328,27 @@ $( document ).ready(function() {
 			$("#help-callback").addClass('hidden');
 			$("#help-callback").removeClass('show');
 		}
-		
 	});
 
 	$("#input-message").keyup(function() {
-		if (/[а-я]/i.test($("#input-message").val()))
-			max=70;
-		else
-			max=140;
-		smsc=Math.ceil($("#input-message").val().length/max);
-		sm=max*(smsc-1);
-		var box=$(this).val();
-		var main = (box.length-sm) *100;
-		var value= (main / max);
+		max = (/[а-я]/i.test($("#input-message").val()))?70:140;
+		smsc = Math.ceil($("#input-message").val().length/max);
+		sm = max * (smsc - 1);
+		var box = $(this).val();
+		var main = (box.length - sm) * 100;
+		var value = (main / max);
 		$('#count').html(box.length);
-		$('.progress-bar').animate(
-		{
-			"width": value+'%',
-		}, 1);
+		$('.progress-bar').animate({"width": value+'%'}, 1);
 		$('#countSMS').html(smsc);
 		return false;
 	});
 
-	$(".digitOnly").keyup(function (){
-		$(this).val($(this).val().replace(/[^\d]/g, ''));
+	$(".digitOnly").keyup(function() {
+		$(this).val($(this).val().replace(/[^\d,]/g, ''));
 	});
 
-	$("#test_send").click(function(){
-		var data="&sender="+$('#input-sender').val()+"&to="+$('#input-phone').val()+"&api="+$('#input-apikey').val()+"&message=test";
+	$("#test_send").click(function() {
+		var data = "&sender="+$('#input-sender').val()+"&to="+$('#input-phone').val()+"&api="+$('#input-apikey').val()+"&message=test";
 		var btn = $(this);
 		btn.button('loading');
 		$.ajax({
@@ -365,10 +358,9 @@ $( document ).ready(function() {
 			data: data,
 			success: function(html){
 				var jsonData = JSON.parse(html);
-				if (jsonData['error'] != 100)
+				if (jsonData['error'] != 100) {
 					$('#result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
-				else
-				{
+				} else {
 					$('#result').html('<div class="alert alert-success">'+jsonData['text']+'</div>');
 					$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
 				}
@@ -377,8 +369,8 @@ $( document ).ready(function() {
 		});
 	});
 
-	$("#balance").click(function(){
-		var data="&api="+$('#input-apikey').val();
+	$("#balance").click(function() {
+		var data = "&api="+$('#input-apikey').val();
 		var btn = $(this);
 		$.ajax({
 			type: "POST",
@@ -387,17 +379,16 @@ $( document ).ready(function() {
 			data: data,
 			success: function(html){
 				var jsonData = JSON.parse(html);
-				if (jsonData['error'])
+				if (jsonData['error']) {
 					$('#result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
-				else
-				{
+				} else {
 					$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
 				}
 			},
 		});
 	});
 
-	$('#input-to').change(function(){
+	$('#input-to').change(function() {
 		if ($(this).val() == 4) {
 			$("#arbitrary").removeClass('hide');
 			$("#arbitrary").addClass('show');
@@ -406,16 +397,15 @@ $( document ).ready(function() {
 			$("#arbitrary").removeClass('show');
 			$("#arbitrary").addClass('hide');
 			$('.mas').removeClass('disabled');
-
 		}
 	});
 
-	$("#send").click(function(){
+	$("#send").click(function() {
 		if (($('#input-to option:selected').val() == 4) && ($('#input-arbitrary').val().length < 11)) {
 			$('#arbitrary').addClass('has-error');
 		} else {
 			$('#arbitrary').removeClass('has-error');
-			var data="&sender="+$('#input-sender').val()+"&api="+$('#input-apikey').val()+"&message="+$('#input-message').val()+"&to="+$('#input-to option:selected').val()+"&arbitrary="+$('#input-arbitrary').val();
+			var data = "&sender="+$('#input-sender').val()+"&api="+$('#input-apikey').val()+"&message="+$('#input-message').val()+"&to="+$('#input-to option:selected').val()+"&arbitrary="+$('#input-arbitrary').val();
 			var btn = $(this);
 			btn.button('loading');
 			$.ajax({
@@ -437,15 +427,14 @@ $( document ).ready(function() {
 		}
 	});
 	jQuery.fn.extend({
-		insertAtCaret: function(myValue){
+		insertAtCaret: function(myValue) {
 		return this.each(function(i) {
 			if (document.selection) {
 				this.focus();
 				var sel = document.selection.createRange();
 				sel.text = myValue;
 				this.focus();
-			}
-			else if (this.selectionStart || this.selectionStart == '0') {
+			} else if (this.selectionStart || this.selectionStart == '0') {
 				var startPos = this.selectionStart;
 				var endPos = this.selectionEnd;
 				var scrollTop = this.scrollTop;
@@ -461,12 +450,12 @@ $( document ).ready(function() {
 		});
 		}
 	});
-	$('.btni').click(function(){
-		var target=$(this).data('target');
-		var text=$(this).data('insert');
-		$('#'+target).insertAtCaret(text);
-	});
 
+	$('.btni').click(function() {
+		var target = $(this).data('target');
+		var text = $(this).data('insert');
+		$('#' + target).insertAtCaret(text);
+	});
 
 	$('#log').delegate('.sort', 'click', function(e) {
 		e.preventDefault();
@@ -475,55 +464,50 @@ $( document ).ready(function() {
 
 	$('#log').delegate('.pagination a', 'click', function(e) {
 		e.preventDefault();
-
 		$('#log').load(this.href);
 	});
 
 	$('#log').load('index.php?route=module/smsnot/log&token=<?php echo $token; ?>');
 
-	
+	$('.date').datetimepicker({
+		pickTime: false
+	});
 
-$('.date').datetimepicker({
-	pickTime: false
-});
+	$('#button-filte').on('click', function(e) {
+		url = 'index.php?route=module/smsnot/log&token=<?php echo $token; ?>';
 
+		var filter_phone = $('input[name=\'filter_phone\']').val();
 
-$('#button-filte').on('click', function(e) {
-	url = 'index.php?route=module/smsnot/log&token=<?php echo $token; ?>';
+		if (filter_phone) {
+			url += '&filter_phone=' + encodeURIComponent(filter_phone);
+		}
 
-	var filter_phone = $('input[name=\'filter_phone\']').val();
+		var filter_text = $('input[name=\'filter_text\']').val();
 
-	if (filter_phone) {
-		url += '&filter_phone=' + encodeURIComponent(filter_phone);
-	}
+		if (filter_text) {
+			url += '&filter_text=' + encodeURIComponent(filter_text);
+		}
 
-	var filter_text = $('input[name=\'filter_text\']').val();
+		var filter_status = $('select[name=\'filter_status\']').val();
 
-	if (filter_text) {
-		url += '&filter_text=' + encodeURIComponent(filter_text);
-	}
+		if (filter_status != '*') {
+			url += '&filter_status=' + encodeURIComponent(filter_status);
+		}
 
-	var filter_status = $('select[name=\'filter_status\']').val();
+		var filter_date_start = $('input[name=\'filter_date_start\']').val();
 
-	if (filter_status != '*') {
-		url += '&filter_status=' + encodeURIComponent(filter_status);
-	}
+		if (filter_date_start) {
+			url += '&filter_date_start=' + encodeURIComponent(filter_date_start);
+		}
 
-	var filter_date_start = $('input[name=\'filter_date_start\']').val();
+		var filter_date_stop = $('input[name=\'filter_date_stop\']').val();
 
-	if (filter_date_start) {
-		url += '&filter_date_start=' + encodeURIComponent(filter_date_start);
-	}
+		if (filter_date_stop) {
+			url += '&filter_date_stop=' + encodeURIComponent(filter_date_stop);
+		}
 
-	var filter_date_stop = $('input[name=\'filter_date_stop\']').val();
-
-	if (filter_date_stop) {
-		url += '&filter_date_stop=' + encodeURIComponent(filter_date_stop);
-	}
-
-	$('#log').load(url);
-});
-
+		$('#log').load(url);
+	});
 });
 </script>
 </div>

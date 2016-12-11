@@ -23,7 +23,8 @@ class ControllerModuleSmsnot extends Controller {
 		301 =>"Неправильный пароль, либо пользователь не найден",
 		302 =>"Пользователь авторизован, но аккаунт не подтвержден (пользователь не ввел код, присланный в регистрационной смс)");
 
-	private $status_array = array(-1	 => 'Cообщение не найдено.',
+	private $status_array = array(
+		-1 => 'Cообщение не найдено.',
 		100 => 'В очереди',
 		101 => 'Передается оператору',
 		102 => 'Отправлено (в пути)',
@@ -172,13 +173,13 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['entry_text'] = $this->language->get('entry_text');
 		$this->data['entry_smsnot_log'] = $this->language->get('entry_smsnot_log');
 
-		$this->data['error_warning']  = '';
-		$this->data['action']         = $this->url->link('module/smsnot', 'token=' . $this->session->data['token'], 'SSL');
-		$this->data['cancel']         = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
+		$this->data['error_warning'] = '';
+		$this->data['action'] = $this->url->link('module/smsnot', 'token=' . $this->session->data['token'], 'SSL');
+		$this->data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
 
-		$this->data['data']           = $this->model_setting_setting->getSetting('smsnot');
-		$this->data['balance']        = 0;
-		$this->data['token']          = $this->session->data['token'];
+		$this->data['data'] = $this->model_setting_setting->getSetting('smsnot');
+		$this->data['balance'] = 0;
+		$this->data['token'] = $this->session->data['token'];
 		$this->data['log_href'] = $this->url->link('module/smsnot/log', 'token=' . $this->session->data['token']);
 		$this->data['token'] = $this->session->data['token'];
 
@@ -186,8 +187,7 @@ class ControllerModuleSmsnot extends Controller {
 
 		$this->data['callback'] = str_replace("/admin", "", $this->url->link('api/smscallback', '', 'SSL'));
 
-
-		if ($this->data['data']['smsnot-apikey']!='') {
+		if ($this->data['data']['smsnot-apikey'] != '') {
 			$balance = $this->get_balance($this->data['data']['smsnot-apikey']);
 			$this->data['balance'] = (in_array('balance', $balance))?$balance['balance']:'-';
 		}
@@ -261,7 +261,6 @@ class ControllerModuleSmsnot extends Controller {
 
 		$this->data['text_no_results'] = $this->language->get('text_no_result');
 
-
 		if (isset($this->request->get['order'])) {
 			$order = $this->request->get['order'];
 		} else {
@@ -285,15 +284,15 @@ class ControllerModuleSmsnot extends Controller {
 		$this->load->model('module/smsnot');
 
 		$filter_data = array(
-			'filter_text'              => $filter_text,
-			'filter_phone'             => $filter_phone,
-			'filter_date_start'        => $filter_date_start,
-			'filter_date_stop'         => $filter_date_stop,
-			'filter_status'            => $filter_status,
-			'sort'                     => $sort,
-			'order'                    => $order,
-			'start'                    => ($page - 1) * $this->config->get('config_limit_admin'),
-			'limit'                    => $this->config->get('config_limit_admin')
+			'filter_text'       => $filter_text,
+			'filter_phone'      => $filter_phone,
+			'filter_date_start' => $filter_date_start,
+			'filter_date_stop'  => $filter_date_stop,
+			'filter_status'     => $filter_status,
+			'sort'              => $sort,
+			'order'             => $order,
+			'start'             => ($page - 1) * $this->config->get('config_limit_admin'),
+			'limit'             => $this->config->get('config_limit_admin')
 		);
 
 		$this->data['sends'] = $this->model_module_smsnot->getLogRecords($filter_data);
@@ -327,17 +326,17 @@ class ControllerModuleSmsnot extends Controller {
 
 		$this->load->model('setting/setting');
 		$basic=array(
-		'smsnot-sender'=>'',
-		'smsnot-phone'=>'',
-		'smsnot-apikey'=>'',
-		'smsnot-message-template'=>'Order №{OrderID} in {StoreName}, changed status to {Status}',
-		'smsnot-message-customer'=>'New order №{OrderID} in {StoreName}',
-		'smsnot-message-admin'=>'New order #{OrderID} at the store "{StoreName}". Total {Total}',
-		'smsnot-order-change'=>0,
-		'smsnot-new-order'=>0,
-		'smsnot-owner'=>0,
-		'smsnot-log'=>0,
-		'smsnot-enabled'=>0);
+		'smsnot-sender' => '',
+		'smsnot-phone' => '',
+		'smsnot-apikey' => '',
+		'smsnot-message-template' => 'Order №{OrderID} in {StoreName}, changed status to {Status}',
+		'smsnot-message-customer' => 'New order №{OrderID} in {StoreName}',
+		'smsnot-message-admin' => 'New order #{OrderID} at the store "{StoreName}". Total {Total}',
+		'smsnot-order-change' => 0,
+		'smsnot-new-order' => 0,
+		'smsnot-owner' => 0,
+		'smsnot-log' => 0,
+		'smsnot-enabled' => 0);
 		$this->model_setting_setting->editSetting('smsnot', $basic, 0);
 	}
 
@@ -355,7 +354,6 @@ class ControllerModuleSmsnot extends Controller {
 		$this->load->model('extension/event');
 		$this->model_extension_event->deleteEvent('smsnot');
 	}
-
 
 	public function send() {
 		$json = array();
@@ -376,7 +374,7 @@ class ControllerModuleSmsnot extends Controller {
 				$this->model_module_smsnot->setLogRecord($resp);
 			}
 		}
-		$this->response->setOutput(json_encode($resp));
+		$this->response->setOutput(json_encode($json));
 	}
 
 	public function balance(){
@@ -433,17 +431,23 @@ class ControllerModuleSmsnot extends Controller {
 					$customers = $this->model_module_smsnot->getPhones($filter);
 					$query = '';
 					$i = 0;
+					$log_phone = '';
 					foreach ($customers as $customer) {
 						if (preg_match('/(\+|)[0-9]{11,12}/', $customer['telephone'])) {
 							$i++;
 							$original = array("{StoreName}", "{Name}", "{LastName}");
 							$replace = array($this->config->get('config_name'), $customer['firstname'], $customer['lastname']);
 							$message = str_replace($original, $replace, $this->request->post['message']);
-							$query.='&multi['.$customer['telephone'].']='.$message;
+							$query .= '&multi['.$customer['telephone'].']='.$message;
+							$log_phone .= $customer['telephone']." ";
 							if ($i>99) {
 								$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
 								$query = '';
 								$i = 0;
+								$log = $json;
+								$log['phone'] = $log_phone;
+								$log['text'] = $this->request->post['message'];
+								$this->model_module_smsnot->setLogRecord($log);
 							}
 						}
 					}
@@ -451,6 +455,7 @@ class ControllerModuleSmsnot extends Controller {
 				} else {
 					$phones = explode(',', $this->request->post['arbitrary']);
 					$query = array();
+					$log_phone = '';
 					foreach ($phones as $phone) {
 						$phone = trim($phone);
 						if (preg_match('/(\+|)[0-9]{11,12}/', $phone)) {
@@ -458,9 +463,14 @@ class ControllerModuleSmsnot extends Controller {
 							$replace = array($this->config->get('config_name'), '', '');
 							$message = str_replace($original, $replace, $this->request->post['message']);
 							$query[$phone] = $message;
+							$log_phone .= $phone;
 						}
 					}
 					$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
+					$log = $json;
+					$log['phone'] = $log_phone;
+					$log['text'] = $this->request->post['message'];
+					$this->model_module_smsnot->setLogRecord($log);
 				}
 			}
 		}
@@ -495,7 +505,6 @@ class ControllerModuleSmsnot extends Controller {
 		"to"         => $to,
 		"text"       => $text,
 		"from"       => $sender,
-		'test'       => 1,
 		"partner_id" => 34316);
 		$ch = curl_init("http://sms.ru/sms/send");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -506,7 +515,7 @@ class ControllerModuleSmsnot extends Controller {
 		return $this->read_response($result);
 	}
 
-	private function sms_multisend($api_id, $text, $sender='') {
+	private function sms_multisend($api_id, $text, $sender = '') {
 		$param = array(
 		"api_id"     => $api_id,
 		"multi"      => $text,
@@ -522,12 +531,12 @@ class ControllerModuleSmsnot extends Controller {
 		return $this->read_response($result);
 	}
 
-	private function get_balance($api_key='') {
+	private function get_balance($api_key = '') {
 		$ch = curl_init("http://sms.ru/my/balance");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, array(
-			"api_id"	=>	$api_key
+			"api_id" => $api_key
 		));
 		$response = curl_exec($ch);
 		curl_close($ch);

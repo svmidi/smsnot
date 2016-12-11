@@ -25,7 +25,6 @@ $_['tab_gate']               = 'Settings';
 $_['tab_log']                = 'Log';
 
 $_['entry_to']               = 'To:';
-$_['entry_arbitrary']        = 'Phone:';
 $_['entry_sender']           = 'From:';
 $_['entry_message']          = 'Text:';
 $_['entry_enabled']          = 'Enable:';
@@ -60,7 +59,6 @@ $_['text_send_success']      = 'Message sent';
 $_['text_send_error']        = 'Error sending';
 $_['text_no_result']         = 'No result';
 $_['text_log_disabled']      = 'Log disabled in settings';
-$_['text_arbitrary']         = 'Enter the phone number';
 
 $_['column_text']            = 'Text';
 $_['column_phone']           = 'Phone';
@@ -74,5 +72,4 @@ $_['help_message_admin']    = 'The message that will get the owner to create a n
 $_['help_message']          = 'The message. {Name} - first name, {LastName} - last name, {StoreName} - store name.';
 $_['help_sure']             = 'You are sure?';
 $_['help_callback']         = 'Enter address sms callback <a href="https://svmidi.sms.ru/?panel=apps&subpanel=cb" target="_blank">sms.ru</a>';
-$_['help_arbitrary']        = 'Enter the phone or phones, separated by commas. For example: 79000000000,79000000001,79000000002';
 ?>
