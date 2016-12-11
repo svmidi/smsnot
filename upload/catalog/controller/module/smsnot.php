@@ -1,46 +1,17 @@
 <?php
 class ControllerModuleSmsnot extends Controller {
 
-	public function onCheckout($order = 0) {
+	public function onHistoryChange($order = 0) {
+
 		if (is_array($order)) {
 			$order_id = $order['order_id'];
-		} elseif ($order == 0) {
+		} elseif (($order == 0) AND (isset($this->session->data['order_id']))) {
 			$order_id = $this->session->data['order_id'];
+		} elseif (($order == 0) AND (isset($this->request->get['order_id']))) {
+			$order_id = $this->request->get['order_id'];
 		} else {
 			$order_id = $order;
 		}
-		$this->load->model('checkout/order');
-		$order_info = $this->model_checkout_order->getOrder($order_id);
-
-		$this->load->model('setting/setting');
-		$setting = $this->model_setting_setting->getSetting('smsnot');
-
-		if (isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey']))) {
-
-			$total = $this->currency->convert($order_info['total'], $order_info['currency_code'], $order_info['currency_code']);
-
-			if (isset($setting['smsnot-owner']) && ($setting['smsnot-owner'] == 'on')) {
-				$original = array("{StoreName}","{OrderID}", "{Total}", "{LastName}", "{FirstName}", "{Phone}", "{City}", "{Address}", "{Comment}");
-				$replace = array($this->config->get('config_name'), $order_id, $total, $order_info['lastname'], $order_info['firstname'], $order_info['telephone'], $order_info['shipping_city'], $order_info['shipping_address_1'], $order_info['comment']);
-
-				$message = str_replace($original, $replace, $setting['smsnot-message-admin']);
-
-				$this->sms_send($setting['smsnot-apikey'], $setting['smsnot-phone'], $message, $setting['smsnot-sender']);
-			}
-			if (isset($setting['smsnot-new-order']) && ($setting['smsnot-new-order'] == 'on')) {
-				$original = array("{StoreName}","{OrderID}", "{LastName}", "{FirstName}", "{Total}");
-				$replace = array($this->config->get('config_name'), $order_id, $order_info['lastname'], $order_info['firstname'], $total);
-
-				$message = str_replace($original, $replace, $setting['smsnot-message-customer']);
-				if (preg_match('/(\+|)[0-9]{11,12}/', $order_info['telephone'])) {
-					$this->sms_send($setting['smsnot-apikey'], $order_info['telephone'], $message, $setting['smsnot-sender']);
-				}
-			}
-		}
-	}
-
-	public function onHistoryChange($order_id = 0) {
-		$order_id = ($order_id != 0)?$order_id:$this->request->get['order_id'];
 
 		$this->load->model('checkout/order');
 		$order_info = $this->model_checkout_order->getOrder($order_id);	
@@ -64,6 +35,26 @@ class ControllerModuleSmsnot extends Controller {
 				
 				if (preg_match('/(\+|)[0-9]{11,12}/', $order_info['telephone'])) {
 					$this->sms_send($setting['smsnot-apikey'], $order_info['telephone'], $message, $setting['smsnot-sender']);
+				}
+			} else {
+				$total = $this->currency->convert($order_info['total'], $order_info['currency_code'], $order_info['currency_code']);
+
+				if (isset($setting['smsnot-owner']) && ($setting['smsnot-owner'] == 'on')) {
+					$original = array("{StoreName}","{OrderID}", "{Total}", "{LastName}", "{FirstName}", "{Phone}", "{City}", "{Address}", "{Comment}");
+					$replace = array($this->config->get('config_name'), $order_id, $total, $order_info['lastname'], $order_info['firstname'], $order_info['telephone'], $order_info['shipping_city'], $order_info['shipping_address_1'], $order_info['comment']);
+
+					$message = str_replace($original, $replace, $setting['smsnot-message-admin']);
+
+					$this->sms_send($setting['smsnot-apikey'], $setting['smsnot-phone'], $message, $setting['smsnot-sender']);
+				}
+				if (isset($setting['smsnot-new-order']) && ($setting['smsnot-new-order'] == 'on')) {
+					$original = array("{StoreName}","{OrderID}", "{LastName}", "{FirstName}", "{Total}");
+					$replace = array($this->config->get('config_name'), $order_id, $order_info['lastname'], $order_info['firstname'], $total);
+
+					$message = str_replace($original, $replace, $setting['smsnot-message-customer']);
+					if (preg_match('/(\+|)[0-9]{11,12}/', $order_info['telephone'])) {
+						$this->sms_send($setting['smsnot-apikey'], $order_info['telephone'], $message, $setting['smsnot-sender']);
+					}
 				}
 			}
 		}
