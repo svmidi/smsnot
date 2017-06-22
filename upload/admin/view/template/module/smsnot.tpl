@@ -181,12 +181,22 @@
 							</div>
 							<div class="checkbox">
 								<label>
-								<?php if ((isset($data['smsnot-order-change'])) AND ($data['smsnot-order-change'])) { ?>
+								<?php if ((isset($data['smsnot-order-change'])) AND ($data['smsnot-order-change'])) { $notice = ""; ?>
 								<input type="checkbox" name="smsnot-order-change" checked="checked" />
-								<?php } else { ?>
+								<?php } else { $notice = " disabled"; ?>
 								<input type="checkbox" name="smsnot-order-change" />
 								<?php } ?>
 								<?php echo $text_order_change; ?>
+								</label>
+							</div>
+							<div class="checkbox" style="padding-left:20px">
+								<label>
+								<?php if ((isset($data['smsnot-order-change-notice'])) AND ($data['smsnot-order-change-notice'])) { ?>
+								<input type="checkbox" name="smsnot-order-change-notice" checked="checked"  <?php echo $notice; ?>/>
+								<?php } else { ?>
+								<input type="checkbox" name="smsnot-order-change-notice" <?php echo $notice; ?>/>
+								<?php } ?>
+								<?php echo $text_order_change_notice; ?>
 								</label>
 							</div>
 							<div class="checkbox">
@@ -212,9 +222,11 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label" for="input-phone"><?php echo $entry_phone; ?></label>
+					<label class="col-sm-2 control-label" for="input-phone">
+						<span data-toggle="tooltip" data-original-title="<?php echo $help_phone; ?>"><?php echo $entry_phone; ?>
+					</label>
 					<div class="col-sm-10">
-						<input name="smsnot-phone" type="text" placeholder="<?php echo $entry_phone; ?>" id="input-phone" class="form-control digitOnly" value="<?php echo $data['smsnot-phone']; ?>" maxlength="11">
+						<input name="smsnot-phone" type="text" placeholder="<?php echo $entry_phone; ?>" id="input-phone" class="form-control digitOnly" value="<?php echo $data['smsnot-phone']; ?>">
 					</div>
 				</div>
 				<div class="form-group">
@@ -330,6 +342,15 @@ $(document).ready(function() {
 		}
 	});
 
+	$("input[name=smsnot-order-change]").change(function(){
+		if ($(this).is(':checked')) {
+			$("input[name=smsnot-order-change-notice]").prop('disabled', false);
+		} else {
+			$("input[name=smsnot-order-change-notice]").prop('disabled', true);
+			$("input[name=smsnot-order-change-notice]").prop('checked', false);
+		}
+	});
+
 	$("#input-message").keyup(function() {
 		max = (/[а-я]/i.test($("#input-message").val()))?70:140;
 		smsc = Math.ceil($("#input-message").val().length/max);
@@ -338,7 +359,7 @@ $(document).ready(function() {
 		var main = (box.length - sm) * 100;
 		var value = (main / max);
 		$('#count').html(box.length);
-		$('.progress-bar').animate({"width": value+'%'}, 1);
+		$('.progress-bar').animate({"width": value + '%'}, 1);
 		$('#countSMS').html(smsc);
 		return false;
 	});
@@ -356,7 +377,7 @@ $(document).ready(function() {
 			url: "index.php?route=module/smsnot/send&token=<?php echo $token; ?>",
 			cache: false,
 			data: data,
-			success: function(html){
+			success: function(html) {
 				var jsonData = JSON.parse(html);
 				if (jsonData['error'] != 100) {
 					$('#result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
@@ -377,7 +398,7 @@ $(document).ready(function() {
 			url: "index.php?route=module/smsnot/balance&token=<?php echo $token; ?>",
 			cache: false,
 			data: data,
-			success: function(html){
+			success: function(html) {
 				var jsonData = JSON.parse(html);
 				if (jsonData['error']) {
 					$('#result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
@@ -410,16 +431,20 @@ $(document).ready(function() {
 			btn.button('loading');
 			$.ajax({
 				type: "POST",
-				url: "index.php?route=module/smsnot/massend&token=<?php echo $token; ?>",
+				url: "index.php?route=extension/module/smsnot/massend&token=<?php echo $token; ?>",
 				cache: false,
 				data: data,
 				success: function(html){
-					var jsonData = JSON.parse(html);
-					if (jsonData['error'] != 100) {
-						$('#multi-result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
-					} else {
-						$('#multi-result').html('<div class="alert alert-success">'+jsonData['text']+'</div>');
-						$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
+					try {
+						jsonData = $.parseJSON(html);
+						if (jsonData['error'] != 100) {
+							$('#multi-result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
+						} else {
+							$('#multi-result').html('<div class="alert alert-success">'+jsonData['text']+'</div>');
+							$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
+						}
+					} catch (e) {
+						$('#multi-result').html('<div class="alert alert-danger">Error: ('+html+')</div>');
 					}
 					btn.button('reset');
 				},

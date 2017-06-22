@@ -44,6 +44,7 @@ class ModelModuleSmsnot extends Model {
 	}
 
 	public function getLogRecords($filter = array()) {
+
 		$sql = "SELECT * FROM `" . DB_PREFIX . "smsnot` WHERE 1=1";
 		if (!empty($filter['filter_text'])) {
 			$sql .= " AND text LIKE '" . $this->db->escape($filter['filter_text']) . "%'";

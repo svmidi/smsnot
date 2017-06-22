@@ -24,9 +24,9 @@ class ModelModuleSmsnot extends Model {
 	}
 
 	public function getHistory($order_id) {
-		$data = array(); 
-		$query = $this->db->query("SELECT `comment` FROM `" . DB_PREFIX ."order_history` WHERE `order_id` = ". $order_id." ORDER BY `order_history_id` DESC LIMIT 1;");
-		return $query->row['comment'];
+		$query = $this->db->query("SELECT `comment`, `notify` FROM `" . DB_PREFIX ."order_history` WHERE `order_id` = ". $order_id." ORDER BY `order_history_id` DESC LIMIT 1;");
+		$data = array('comment' => $query->row['comment'], 'notify' => $query->row['notify']); 
+		return $data;
 	}
 }
 ?>
