@@ -1,4 +1,4 @@
-# smsnot
+# smsnot 1.4.4
 The module sending SMS notifications for OpenCart 2.x
 
 Description
@@ -10,10 +10,10 @@ Capabilities:
 * Sending SMS to the buyer when changing the status of the order (shipped, processed, etc.)
 * Bulk buyers registred news, offers, etc.
 * Displays the current balance online sms.ru
+* History of sending SMS
 Future versions plan to add:  
 * Multilanguage
 * It works with several shops
-* History of sending SMS
 
 Описание
 ========
@@ -24,10 +24,12 @@ Future versions plan to add:
 * Отправка СМС покупателю при изменении статуса заказа (отгружен, обрабатывается и т.д.)
 * Массовая рассылка зарегистрированым покупателям новостей, предложений и т.д.
 * Отображение текущего баланса на сайте sms.ru
+* История отправки SMS
+* Отправка сообщений на указанные номера
 В следующих версиях планирую добавить:
 * мультиязычность
 * работа с несколькими магазинами
-* история отправки СМС
+
 
 Install
 =======
@@ -44,3 +46,8 @@ Install
 3. Отметье **module/smsnot** в разделе "Разрешён просмотр" и **module/smsnot** в разделе "Разрешено внесение изменений" и сохраните изменения.
 4. Перейдите в **Модули -> Модули** и нажмите кнопку "Активировать" напротив "Smsnot for SMS.RU".
 5. Теперь вы можете зайти в настройки модуля и произвести необходимые настройки.
+
+Контакты
+========
+http://svm-zone.ru/
+svmidi@gmail.com

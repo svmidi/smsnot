@@ -56,9 +56,18 @@
 					<div class="col-sm-10">
 						<select name="input_to" id="input-to" class="form-control">
 							<option value="0"><?php echo $text_all; ?></option>
+							<option value="4"><?php echo $text_arbitrary; ?></option>
 							<option value="1"><?php echo $text_newsletter; ?></option>
 						<?php echo $option_all.$option_news; ?>
 						</select>
+					</div>
+				</div>
+				<div class="form-group hide" id="arbitrary">
+					<label class="col-sm-2 control-label" for="input-arbitrary">
+						<span data-toggle="tooltip" data-original-title="<?php echo $help_arbitrary; ?>"><?php echo $entry_arbitrary; ?></span>
+					</label>
+					<div class="col-sm-10">
+						<input name="input_arbitrary" id="input-arbitrary" class="form-control digitOnly" value="" placeholder="<?php echo $entry_arbitrary; ?>">
 					</div>
 				</div>
 				<div class="form-group">
@@ -75,9 +84,9 @@
 								<div>SMS: <span id="countSMS">1</span></div>
 							</div>
 							<div class="col-sm-6 btn-group" role="group">
-								<button class="btn btn-default btni" type="button" data-insert="{StoreName}" data-target="input-message"><?php echo $button_storename; ?></button>
-								<button class="btn btn-default btni" type="button" data-insert="{Name}" data-target="input-message"><?php echo $button_name; ?></button>
-								<button class="btn btn-default btni" type="button" data-insert="{LastName}" data-target="input-message"><?php echo $button_lastname; ?></button>
+								<button class="btn btn-default btni mas" type="button" data-insert="{StoreName}" data-target="input-message"><?php echo $button_storename; ?></button>
+								<button class="btn btn-default btni mas" type="button" data-insert="{Name}" data-target="input-message"><?php echo $button_name; ?></button>
+								<button class="btn btn-default btni mas" type="button" data-insert="{LastName}" data-target="input-message"><?php echo $button_lastname; ?></button>
 							</div>
 						</div>
 						<textarea name="input-message" rows="5" placeholder="<?php echo $entry_message; ?>" id="input-message" class="form-control"></textarea>
@@ -115,6 +124,9 @@
 							<button class="btn btn-default btni" type="button" data-insert="{OrderID}" data-target="input-message-template"><?php echo $button_orderid; ?></button>
 							<button class="btn btn-default btni" type="button" data-insert="{Status}" data-target="input-message-template"><?php echo $button_status; ?></button>
 							<button class="btn btn-default btni" type="button" data-insert="{StoreName}" data-target="input-message-template"><?php echo $button_storename; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{FirstName}" data-target="input-message-template"><?php echo $button_name; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{LastName}" data-target="input-message-template"><?php echo $button_lastname; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{Comment}" data-target="input-message-template"><?php echo $button_comment; ?></button>
 						</div>
 						<textarea name="smsnot-message-template" rows="5" placeholder="<?php echo $entry_message_template; ?>" id="input-message-template" class="form-control"><?php echo $data['smsnot-message-template']; ?></textarea>
 					</div>
@@ -127,6 +139,9 @@
 						<div class="btn-group-xs btn-group" role="group">
 							<button class="btn btn-default btni" type="button" data-insert="{OrderID}" data-target="input-message-customer"><?php echo $button_orderid; ?></button>
 							<button class="btn btn-default btni" type="button" data-insert="{StoreName}" data-target="input-message-customer"><?php echo $button_storename; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{Total}" data-target="input-message-customer"><?php echo $button_total; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{FirstName}" data-target="input-message-customer"><?php echo $button_name; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{LastName}" data-target="input-message-customer"><?php echo $button_lastname; ?></button>
 						</div>
 						<textarea name="smsnot-message-customer" rows="5" placeholder="<?php echo $entry_message_customer; ?>" id="input-message-customer" class="form-control"><?php echo $data['smsnot-message-customer']; ?></textarea>
 					</div>
@@ -140,6 +155,12 @@
 							<button class="btn btn-default btni" type="button" data-insert="{OrderID}" data-target="input-message-admin"><?php echo $button_orderid; ?></button>
 							<button class="btn btn-default btni" type="button" data-insert="{StoreName}" data-target="input-message-admin"><?php echo $button_storename; ?></button>
 							<button class="btn btn-default btni" type="button" data-insert="{Total}" data-target="input-message-admin"><?php echo $button_total; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{FirstName}" data-target="input-message-admin"><?php echo $button_name; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{LastName}" data-target="input-message-admin"><?php echo $button_lastname; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{City}" data-target="input-message-admin"><?php echo $button_city; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{Address}" data-target="input-message-admin"><?php echo $button_address; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{Phone}" data-target="input-message-admin"><?php echo $button_phone; ?></button>
+							<button class="btn btn-default btni" type="button" data-insert="{Comment}" data-target="input-message-admin"><?php echo $button_comment; ?></button>
 						</div>
 						<textarea name="smsnot-message-admin" rows="5" placeholder="<?php echo $entry_message_admin; ?>" id="input-message-admin" class="form-control"><?php echo $data['smsnot-message-admin']; ?></textarea>
 					</div>
@@ -160,12 +181,22 @@
 							</div>
 							<div class="checkbox">
 								<label>
-								<?php if ((isset($data['smsnot-order-change'])) AND ($data['smsnot-order-change'])) { ?>
+								<?php if ((isset($data['smsnot-order-change'])) AND ($data['smsnot-order-change'])) { $notice = ""; ?>
 								<input type="checkbox" name="smsnot-order-change" checked="checked" />
-								<?php } else { ?>
+								<?php } else { $notice = " disabled"; ?>
 								<input type="checkbox" name="smsnot-order-change" />
 								<?php } ?>
 								<?php echo $text_order_change; ?>
+								</label>
+							</div>
+							<div class="checkbox" style="padding-left:20px">
+								<label>
+								<?php if ((isset($data['smsnot-order-change-notice'])) AND ($data['smsnot-order-change-notice'])) { ?>
+								<input type="checkbox" name="smsnot-order-change-notice" checked="checked"  <?php echo $notice; ?>/>
+								<?php } else { ?>
+								<input type="checkbox" name="smsnot-order-change-notice" <?php echo $notice; ?>/>
+								<?php } ?>
+								<?php echo $text_order_change_notice; ?>
 								</label>
 							</div>
 							<div class="checkbox">
@@ -191,9 +222,11 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label" for="input-phone"><?php echo $entry_phone; ?></label>
+					<label class="col-sm-2 control-label" for="input-phone">
+						<span data-toggle="tooltip" data-original-title="<?php echo $help_phone; ?>"><?php echo $entry_phone; ?>
+					</label>
 					<div class="col-sm-10">
-						<input name="smsnot-phone" type="text" placeholder="<?php echo $entry_phone; ?>" id="input-phone" class="form-control digitOnly" value="<?php echo $data['smsnot-phone']; ?>" maxlength="11">
+						<input name="smsnot-phone" type="text" placeholder="<?php echo $entry_phone; ?>" id="input-phone" class="form-control digitOnly" value="<?php echo $data['smsnot-phone']; ?>">
 					</div>
 				</div>
 				<div class="form-group">
@@ -273,8 +306,7 @@
 							<label class="control-label" for="input-status"><?php echo $entry_status; ?></label>
 							<select name="filter_status" id="input-status" class="form-control">
 								<option value="*">*</option>
-								<?php print_r($statuses);
-								foreach ($statuses as $key => $title) {
+								<?php foreach ($statuses as $key => $title) {
 								echo '<option value="'.$key.'">'.$title.'</option>';
 								} ?>
 							</select>
@@ -298,9 +330,9 @@
 </div>
 
 <script type="text/javascript">
-$( document ).ready(function() {
+$(document).ready(function() {
 
-	$("#input-smsnot-log").on('click change', function(){
+	$("#input-smsnot-log").on('click change', function() {
 		if ($("#input-smsnot-log").prop("checked")) {
 			$("#help-callback").addClass('show');
 			$("#help-callback").removeClass('hidden');
@@ -308,33 +340,36 @@ $( document ).ready(function() {
 			$("#help-callback").addClass('hidden');
 			$("#help-callback").removeClass('show');
 		}
-		
+	});
+
+	$("input[name=smsnot-order-change]").change(function(){
+		if ($(this).is(':checked')) {
+			$("input[name=smsnot-order-change-notice]").prop('disabled', false);
+		} else {
+			$("input[name=smsnot-order-change-notice]").prop('disabled', true);
+			$("input[name=smsnot-order-change-notice]").prop('checked', false);
+		}
 	});
 
 	$("#input-message").keyup(function() {
-		if (/[а-я]/i.test($("#input-message").val()))
-			max=70;
-		else
-			max=140;
-		smsc=Math.ceil($("#input-message").val().length/max);
-		sm=max*(smsc-1);
-		var box=$(this).val();
-		var main = (box.length-sm) *100;
-		var value= (main / max);
+		max = (/[а-я]/i.test($("#input-message").val()))?70:140;
+		smsc = Math.ceil($("#input-message").val().length/max);
+		sm = max * (smsc - 1);
+		var box = $(this).val();
+		var main = (box.length - sm) * 100;
+		var value = (main / max);
 		$('#count').html(box.length);
-		$('.progress-bar').animate(
-		{
-			"width": value+'%',
-		}, 1);
+		$('.progress-bar').animate({"width": value + '%'}, 1);
 		$('#countSMS').html(smsc);
 		return false;
 	});
-	$(".digitOnly").keyup(function (){
-		$(this).val($(this).val().replace(/[^\d]/g, ''));
+
+	$(".digitOnly").keyup(function() {
+		$(this).val($(this).val().replace(/[^\d,]/g, ''));
 	});
 
-	$("#test_send").click(function(){
-		var data="&sender="+$('#input-sender').val()+"&to="+$('#input-phone').val()+"&api="+$('#input-apikey').val()+"&message=test";
+	$("#test_send").click(function() {
+		var data = "&sender="+$('#input-sender').val()+"&to="+$('#input-phone').val()+"&api="+$('#input-apikey').val()+"&message=test";
 		var btn = $(this);
 		btn.button('loading');
 		$.ajax({
@@ -342,12 +377,11 @@ $( document ).ready(function() {
 			url: "index.php?route=module/smsnot/send&token=<?php echo $token; ?>",
 			cache: false,
 			data: data,
-			success: function(html){
+			success: function(html) {
 				var jsonData = JSON.parse(html);
-				if (jsonData['error'] != 100)
+				if (jsonData['error'] != 100) {
 					$('#result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
-				else
-				{
+				} else {
 					$('#result').html('<div class="alert alert-success">'+jsonData['text']+'</div>');
 					$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
 				}
@@ -356,61 +390,76 @@ $( document ).ready(function() {
 		});
 	});
 
-
-
-
-	$("#balance").click(function(){
-		var data="&api="+$('#input-apikey').val();
+	$("#balance").click(function() {
+		var data = "&api="+$('#input-apikey').val();
 		var btn = $(this);
 		$.ajax({
 			type: "POST",
 			url: "index.php?route=module/smsnot/balance&token=<?php echo $token; ?>",
 			cache: false,
 			data: data,
-			success: function(html){
+			success: function(html) {
 				var jsonData = JSON.parse(html);
-				if (jsonData['error'])
+				if (jsonData['error']) {
 					$('#result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
-				else
-				{
+				} else {
 					$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
 				}
 			},
 		});
 	});
 
-	$("#send").click(function(){
-		var data="&sender="+$('#input-sender').val()+"&api="+$('#input-apikey').val()+"&message="+$('#input-message').val()+"&to="+$('#input-to').val();
-		var btn = $(this);
-		btn.button('loading');
-		$.ajax({
-			type: "POST",
-			url: "index.php?route=module/smsnot/massend&token=<?php echo $token; ?>",
-			cache: false,
-			data: data,
-			success: function(html){
-				var jsonData = JSON.parse(html);
-				if (jsonData['error'])
-					$('#multi-result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
-				else
-				{
-					$('#multi-result').html('<div class="alert alert-success">'+jsonData['text']+'</div>');
-					$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
+	$('#input-to').change(function() {
+		if ($(this).val() == 4) {
+			$("#arbitrary").removeClass('hide');
+			$("#arbitrary").addClass('show');
+			$('.mas').addClass('disabled');
+		} else {
+			$("#arbitrary").removeClass('show');
+			$("#arbitrary").addClass('hide');
+			$('.mas').removeClass('disabled');
+		}
+	});
+
+	$("#send").click(function() {
+		if (($('#input-to option:selected').val() == 4) && ($('#input-arbitrary').val().length < 11)) {
+			$('#arbitrary').addClass('has-error');
+		} else {
+			$('#arbitrary').removeClass('has-error');
+			var data = "&sender="+$('#input-sender').val()+"&api="+$('#input-apikey').val()+"&message="+$('#input-message').val()+"&to="+$('#input-to option:selected').val()+"&arbitrary="+$('#input-arbitrary').val();
+			var btn = $(this);
+			btn.button('loading');
+			$.ajax({
+				type: "POST",
+				url: "index.php?route=module/smsnot/massend&token=<?php echo $token; ?>",
+				cache: false,
+				data: data,
+				success: function(html){
+					try {
+						jsonData = $.parseJSON(html);
+						if (jsonData['error'] != 100) {
+							$('#multi-result').html('<div class="alert alert-danger">'+jsonData['text']+'</div>');
+						} else {
+							$('#multi-result').html('<div class="alert alert-success">'+jsonData['text']+'</div>');
+							$('#balance').html('<?php echo $entry_balance; ?> '+jsonData['balance']);
+						}
+					} catch (e) {
+						$('#multi-result').html('<div class="alert alert-danger">Error: ('+html+')</div>');
+					}
 					btn.button('reset');
-				}
-			},
-		});
+				},
+			});
+		}
 	});
 	jQuery.fn.extend({
-		insertAtCaret: function(myValue){
+		insertAtCaret: function(myValue) {
 		return this.each(function(i) {
 			if (document.selection) {
 				this.focus();
 				var sel = document.selection.createRange();
 				sel.text = myValue;
 				this.focus();
-			}
-			else if (this.selectionStart || this.selectionStart == '0') {
+			} else if (this.selectionStart || this.selectionStart == '0') {
 				var startPos = this.selectionStart;
 				var endPos = this.selectionEnd;
 				var scrollTop = this.scrollTop;
@@ -426,12 +475,12 @@ $( document ).ready(function() {
 		});
 		}
 	});
-	$('.btni').click(function(){
-		var target=$(this).data('target');
-		var text=$(this).data('insert');
-		$('#'+target).insertAtCaret(text);
-	});
 
+	$('.btni').click(function() {
+		var target = $(this).data('target');
+		var text = $(this).data('insert');
+		$('#' + target).insertAtCaret(text);
+	});
 
 	$('#log').delegate('.sort', 'click', function(e) {
 		e.preventDefault();
@@ -440,64 +489,50 @@ $( document ).ready(function() {
 
 	$('#log').delegate('.pagination a', 'click', function(e) {
 		e.preventDefault();
-
 		$('#log').load(this.href);
 	});
 
-	$('#log').load('http://cartest.43vp.ru/admin/index.php?route=module/smsnot/log&token=<?php echo $token; ?>');
+	$('#log').load('index.php?route=module/smsnot/log&token=<?php echo $token; ?>');
 
-	
+	$('.date').datetimepicker({
+		pickTime: false
+	});
 
-$('.date').datetimepicker({
-	pickTime: false
-});
+	$('#button-filte').on('click', function(e) {
+		url = 'index.php?route=module/smsnot/log&token=<?php echo $token; ?>';
 
+		var filter_phone = $('input[name=\'filter_phone\']').val();
 
-$('#button-filte').on('click', function(e) {
-	url = 'index.php?route=module/smsnot/log&token=<?php echo $token; ?>';
+		if (filter_phone) {
+			url += '&filter_phone=' + encodeURIComponent(filter_phone);
+		}
 
-	var filter_phone = $('input[name=\'filter_phone\']').val();
+		var filter_text = $('input[name=\'filter_text\']').val();
 
-	if (filter_phone) {
-		url += '&filter_phone=' + encodeURIComponent(filter_phone);
-	}
+		if (filter_text) {
+			url += '&filter_text=' + encodeURIComponent(filter_text);
+		}
 
-	var filter_text = $('input[name=\'filter_text\']').val();
+		var filter_status = $('select[name=\'filter_status\']').val();
 
-	if (filter_text) {
-		url += '&filter_text=' + encodeURIComponent(filter_text);
-	}
+		if (filter_status != '*') {
+			url += '&filter_status=' + encodeURIComponent(filter_status);
+		}
 
-	var filter_status = $('select[name=\'filter_status\']').val();
+		var filter_date_start = $('input[name=\'filter_date_start\']').val();
 
-	if (filter_status != '*') {
-		url += '&filter_status=' + encodeURIComponent(filter_status);
-	}
+		if (filter_date_start) {
+			url += '&filter_date_start=' + encodeURIComponent(filter_date_start);
+		}
 
-	var filter_date_start = $('input[name=\'filter_date_start\']').val();
+		var filter_date_stop = $('input[name=\'filter_date_stop\']').val();
 
-	if (filter_date_start) {
-		url += '&filter_date_start=' + encodeURIComponent(filter_date_start);
-	}
+		if (filter_date_stop) {
+			url += '&filter_date_stop=' + encodeURIComponent(filter_date_stop);
+		}
 
-	var filter_date_stop = $('input[name=\'filter_date_stop\']').val();
-
-	if (filter_date_stop) {
-		url += '&filter_date_stop=' + encodeURIComponent(filter_date_stop);
-	}
-/*
-	alert(url)
-	//location = url;*/
-	$('#log').load(url);
-});
-
-
-
-
-
-
-
-
+		$('#log').load(url);
+	});
 });
 </script>
 </div>
