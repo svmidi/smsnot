@@ -1,5 +1,5 @@
-# smsnot
-The module sending SMS notifications for OpenCart 2.x
+# smsnot 1.4.4
+The module sending SMS notifications for OpenCart 2.3.x
 
 Description
 ===========
@@ -28,19 +28,23 @@ Future versions plan to add:
 * мультиязычность
 * работа с несколькими магазинами
 * история отправки СМС
+* отправка сообщений нескольким администраторам
 
 Install
 =======
 1. Copy the "admin" and "catalog" in the root of your site. On the issue of replacing answered in the affirmative.
-2. In the admin site, go to **System -> Users -> Users Groups -> Administrator**
-3. Tick the **"module / smsnot"** and **"catalog / smsnot"** sections "Access Permission" and "Modify Permission". Save the changes.
-4. Go to the "Extensions" -> "Modules" and click install button in front of the module.
-5. Configure the module.
+2. Go to the "Extensions" -> "Modules" and click install button in front of the module.
+3. Configure the module.
 
 Установка
 =========
 1. Скопируйте содержимое каталога upload в корень вашего магазина. На вопрос о замене каталогов ответить положительно (системные файлы магазина не заменяются).
-2. В администратоивной части сайта перейди в **Система -> Пользователи -> Группа пользователей -> Administrator**.
-3. Отметье **module/smsnot** в разделе "Разрешён просмотр" и **module/smsnot** в разделе "Разрешено внесение изменений" и сохраните изменения.
-4. Перейдите в **Модули -> Модули** и нажмите кнопку "Активировать" напротив "Smsnot for SMS.RU".
-5. Теперь вы можете зайти в настройки модуля и произвести необходимые настройки.
+2. Перейдите в **Модули -> Модули** и нажмите кнопку "Активировать" напротив "Smsnot for SMS.RU".
+3. Теперь вы можете зайти в настройки модуля и произвести необходимые настройки.
+
+
+
+Контакты
+========
+svmidi@gmail.com
+http://svm-zone.ru/

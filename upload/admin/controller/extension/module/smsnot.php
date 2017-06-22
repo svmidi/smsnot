@@ -2,27 +2,6 @@
 class ControllerExtensionModuleSmsnot extends Controller {
 	private $data = array();
 
-	private $error_array = array(
-		100 =>"Сообщение принято к отправке.",
-		200 =>"Неправильный api_id",
-		201 =>"Не хватает средств на лицевом счету",
-		202 =>"Неправильно указан получатель",
-		203 =>"Нет текста сообщения",
-		204 =>"Имя отправителя не согласовано с администрацией",
-		205 =>"Сообщение слишком длинное (превышает 8 СМС)",
-		206 =>"Будет превышен или уже превышен дневной лимит на отправку сообщений",
-		207 =>"На этот номер (или один из номеров) нельзя отправлять сообщения, либо указано более 100 номеров в списке получателей",
-		208 =>"Параметр time указан неправильно",
-		209 =>"Вы добавили этот номер (или один из номеров) в стоп-лист",
-		210 =>"Используется GET, где необходимо использовать POST",
-		211 =>"Метод не найден",
-		212 =>"Текст сообщения необходимо передать в кодировке UTF-8 (вы передали в другой кодировке)",
-		220 =>"Сервис временно недоступен, попробуйте чуть позже.",
-		230 =>"Сообщение не принято к отправке, так как на один номер в день нельзя отправлять более 60 сообщений.",
-		300 =>"Неправильный token (возможно истек срок действия, либо ваш IP изменился)",
-		301 =>"Неправильный пароль, либо пользователь не найден",
-		302 =>"Пользователь авторизован, но аккаунт не подтвержден (пользователь не ввел код, присланный в регистрационной смс)");
-
 	private $status_array = array(
 		-1 => 'Cообщение не найдено.',
 		100 => 'В очереди',
@@ -38,8 +17,18 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		131 => 'Не доставлено: превышено количество одинаковых сообщений на этот номер в минуту',
 		132 => 'Не доставлено: превышено количество одинаковых сообщений на этот номер в день',
 		200 => 'Неправильный api_id',
+		201 => 'Не хватает средств на лицевом счету',
+		202 => 'Неправильно указан получатель',
+		203 => 'Нет текста сообщения',
+		204 => 'Имя отправителя не согласовано с администрацией',
+		205 => 'Сообщение слишком длинное (превышает 8 СМС)',
+		206 => 'Будет превышен или уже превышен дневной лимит на отправку сообщений',
+		207 => 'На этот номер (или один из номеров) нельзя отправлять сообщения, либо указано более 100 номеров в списке получателей',
+		208 => 'Параметр time указан неправильно',
+		209 => 'Вы добавили этот номер (или один из номеров) в стоп-лист',
 		210 => 'Используется GET, где необходимо использовать POST',
 		211 => 'Метод не найден',
+		212 => 'Текст сообщения необходимо передать в кодировке UTF-8 (вы передали в другой кодировке)',
 		220 => 'Сервис временно недоступен, попробуйте чуть позже.',
 		230 => 'Превышен общий лимит количества сообщений на этот номер в день.',
 		231 => 'Превышен лимит одинаковых сообщений на этот номер в минуту.',
@@ -91,7 +80,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		$this->data['breadcrumbs']   = array();
 		$this->data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_home'),
-			'href' => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+			'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL'),
 		);
 		$this->data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_module'),
@@ -147,10 +136,10 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		$this->data['text_newsletter_group'] = $this->language->get('text_newsletter_group');
 		$this->data['text_new_order'] = $this->language->get('text_new_order');
 		$this->data['text_order_change'] = $this->language->get('text_order_change');
+		$this->data['text_order_change_notice'] = $this->language->get('text_order_change_notice');
 		$this->data['text_owner'] = $this->language->get('text_owner');
 		$this->data['text_enable'] = $this->language->get('text_enable');
 		$this->data['text_disable'] = $this->language->get('text_disable');
-		$this->data['text_module'] = $this->language->get('text_module');
 		$this->data['text_money_add'] = $this->language->get('text_money_add');
 		$this->data['text_refresh'] = $this->language->get('text_refresh');
 		$this->data['text_log_disabled'] = $this->language->get('text_log_disabled');
@@ -163,6 +152,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		$this->data['help_sure'] = $this->language->get('help_sure');
 		$this->data['help_arbitrary'] = $this->language->get('help_arbitrary');
 		$this->data['help_callback'] = $this->language->get('help_callback');
+		$this->data['help_phone'] = $this->language->get('help_phone');
 
 		$this->data['entry_date_start'] = $this->language->get('entry_date_start');
 		$this->data['entry_date_stop'] = $this->language->get('entry_date_stop');
@@ -323,6 +313,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		'smsnot-message-customer' => 'New order №{OrderID} in {StoreName}',
 		'smsnot-message-admin' => 'New order #{OrderID} at the store "{StoreName}". Total {Total}',
 		'smsnot-order-change' => 0,
+		'smsnot-order-change-notice' => 0,
 		'smsnot-new-order' => 0,
 		'smsnot-owner' => 0,
 		'smsnot-log' => 0,
@@ -347,6 +338,10 @@ class ControllerExtensionModuleSmsnot extends Controller {
 
 	public function send() {
 		$json = array();
+		$this->load->model('setting/setting');
+
+		$settings = $this->model_setting_setting->getSetting('smsnot');
+
 		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
 			if (!$this->user->hasPermission('modify', 'extension/module/smsnot')) {
 				$json['error'] = 403;
@@ -356,15 +351,20 @@ class ControllerExtensionModuleSmsnot extends Controller {
 				$json['error'] = 404;
 				$json['text'] = 'The message field should not be empty!';
 			}
+			$phones = explode(',', $this->request->post['to']);
 			if (!$json) {
-				$resp = $this->sms_send($this->request->post['api'],$this->request->post['to'],$this->request->post['message'],$this->request->post['sender']);
+				$json = $this->sms_send($this->request->post['api'], $phones[0], $this->request->post['message'], $this->request->post['sender']);
 
-				$this->load->model('extension/module/smsnot');
-				$resp['phone'] = $this->request->post['to'];
-				$this->model_extension_module_smsnot->setLogRecord($resp);
+				if (isset($settings['smsnot-log']) && ($settings['smsnot-log'] == 'on')) {
+					$this->load->model('extension/module/smsnot');
+					$log = $json;
+					$log['phone'] = $phones[0];
+					$log['text'] = $this->request->post['message'];
+					$this->model_extension_module_smsnot->setLogRecord($log);
+				}
 			}
 		}
-		$this->response->setOutput(json_encode($resp));
+		$this->response->setOutput(json_encode($json));
 	}
 
 	public function balance(){
@@ -416,32 +416,42 @@ class ControllerExtensionModuleSmsnot extends Controller {
 				if ($this->request->post['to'] == 1)
 					$filter['filter_newsletter'] = 1;
 
-				if (($this->request->post['to'] != 4) AND ($this->request->post['arbitrary'])) {
+				if (($this->request->post['to'] != 4) AND (!$this->request->post['arbitrary'])) {
 
 					$customers = $this->model_extension_module_smsnot->getPhones($filter);
-					$query = '';
+					$query = array();
 					$i = 0;
 					$log_phone = '';
 					foreach ($customers as $customer) {
-						if (preg_match('/(\+|)[0-9]{11,12}/', $customer['telephone'])) {
+						$phone = preg_replace("/[^0-9]/", '', $customer['telephone']);
+						if (preg_match('/(\+|)[0-9]{11,12}/', $phone)) {
 							$i++;
 							$original = array("{StoreName}", "{Name}", "{LastName}");
 							$replace = array($this->config->get('config_name'), $customer['firstname'], $customer['lastname']);
 							$message = str_replace($original, $replace, $this->request->post['message']);
-							$query .= '&multi['.$customer['telephone'].']='.$message;
-							$log_phone .= $customer['telephone']." ";
-							if ($i>99) {
+							$query[$phone] = $message;
+							$log_phone .= $phone." ";
+							if ($i > 99) {
 								$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
-								$query = '';
+								$query = array();
+								$log_phone = '';
 								$i = 0;
-								$log = $json;
-								$log['phone'] = $log_phone;
-								$log['text'] = $this->request->post['message'];
-								$this->model_extension_module_smsnot->setLogRecord($log);
+								if (isset($settings['smsnot-log']) && ($settings['smsnot-log'] == 'on')) {
+									$log = $json;
+									$log['phone'] = $log_phone;
+									$log['text'] = $this->request->post['message'];
+									$this->model_extension_module_smsnot->setLogRecord($log);
+								}
 							}
 						}
 					}
 					$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
+					if (isset($settings['smsnot-log']) && ($settings['smsnot-log'] == 'on')) {
+						$log = $json;
+						$log['phone'] = $log_phone;
+						$log['text'] = $this->request->post['message'];
+						$this->model_extension_module_smsnot->setLogRecord($log);
+					}
 				} else {
 					$phones = explode(',', $this->request->post['arbitrary']);
 					$query = array();
@@ -457,10 +467,12 @@ class ControllerExtensionModuleSmsnot extends Controller {
 						}
 					}
 					$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
-					$log = $json;
-					$log['phone'] = $log_phone;
-					$log['text'] = $this->request->post['message'];
-					$this->model_extension_module_smsnot->setLogRecord($log);
+					if (isset($settings['smsnot-log']) && ($settings['smsnot-log'] == 'on')) {
+						$log = $json;
+						$log['phone'] = $log_phone;
+						$log['text'] = $this->request->post['message'];
+						$this->model_extension_module_smsnot->setLogRecord($log);
+					}
 				}
 			}
 		}
@@ -469,8 +481,8 @@ class ControllerExtensionModuleSmsnot extends Controller {
 
 	private function read_response($response){
 		$result=array();
+		$this->load->language('extension/module/smsnot');
 		if ($response) {
-			$this->load->language('extension/module/smsnot');
 			$ex = explode("\n", $response);
 			if ($ex[0] == 100) {
 				$balance=explode("=", $ex[2]);
@@ -480,16 +492,18 @@ class ControllerExtensionModuleSmsnot extends Controller {
 				$result['text'] = $this->language->get('text_send_success');
 			} else {
 				$result['error'] = $ex[0];
-				$result['text'] = $this->language->get('text_send_error').' ('.$this->error_array[$ex[0]].')';
+				$result['smsru'] = 0;
+				$result['text'] = $this->language->get('text_send_error').' ('.$this->status_array[$ex[0]].')';
 			}
 		} else {
 			$result['error'] = 500;
 			$result['text'] = $this->language->get('text_send_error').' (Unknown error)';
 		}
+
 		return $result;
 	}
 
-	private function sms_send($api_id, $to=0, $text=0, $sender='') {
+	private function sms_send($api_id, $to = 0, $text = 0, $sender = '') {
 		$param = array(
 		"api_id"     => $api_id,
 		"to"         => $to,
@@ -505,7 +519,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		return $this->read_response($result);
 	}
 
-	private function sms_multisend($api_id, $text, $sender='') {
+	private function sms_multisend($api_id, $text, $sender = '') {
 		$param = array(
 		"api_id"     => $api_id,
 		"multi"      => $text,
@@ -521,7 +535,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		return $this->read_response($result);
 	}
 
-	private function get_balance($api_key='') {
+	private function get_balance($api_key = '') {
 		$ch = curl_init("http://sms.ru/my/balance");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
@@ -533,7 +547,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		$ex = explode("\n", $response);
 		if (count($ex) == 1) {
 			$json['error'] = $response;
-			$json['text'] = $this->error_array[$response];
+			$json['text'] = $this->status_array[$response];
 		} else {
 			$json['error'] = 0;
 			$json['balance'] = $ex[1];
