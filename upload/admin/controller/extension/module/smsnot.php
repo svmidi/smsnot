@@ -33,7 +33,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		230 => 'Превышен общий лимит количества сообщений на этот номер в день.',
 		231 => 'Превышен лимит одинаковых сообщений на этот номер в минуту.',
 		232 => 'Превышен лимит одинаковых сообщений на этот номер в день.',
-		300 => 'Неправильный token',
+		300 => 'Неправильный user_token',
 		301 => 'Неправильный пароль',
 		302 => 'Аккаунт не подтвержден');
 
@@ -58,7 +58,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 				$this->model_setting_setting->editSetting('smsnot', $this->request->post, 0);
 				$this->session->data['success'] = $this->language->get('text_success');
 			}
-			$this->response->redirect(HTTP_SERVER.'index.php?route=extension/module/smsnot&store_id='.$this->request->get['store_id'] . '&token=' . $this->session->data['token']);
+			$this->response->redirect(HTTP_SERVER.'index.php?route=extension/module/smsnot&store_id='.$this->request->get['store_id'] . '&user_token=' . $this->session->data['user_token']);
 		}
 
 		if (isset($this->session->data['success'])) {
@@ -80,15 +80,15 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		$this->data['breadcrumbs']   = array();
 		$this->data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_home'),
-			'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL'),
+			'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], 'SSL'),
 		);
 		$this->data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_module'),
-			'href' => $this->url->link('extension/extension', 'token=' . $this->session->data['token'], 'SSL'),
+			'href' => $this->url->link('extension/extension', 'user_token=' . $this->session->data['user_token'], 'SSL'),
 		);
 		$this->data['breadcrumbs'][] = array(
 			'text' => $this->language->get('heading_title'),
-			'href' => $this->url->link('extension/module/smsnot', 'token=' . $this->session->data['token'], 'SSL'),
+			'href' => $this->url->link('extension/module/smsnot', 'user_token=' . $this->session->data['user_token'], 'SSL'),
 		);
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
@@ -164,18 +164,21 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		$this->data['entry_smsnot_log'] = $this->language->get('entry_smsnot_log');
 
 		$this->data['error_warning'] = '';
-		$this->data['action'] = $this->url->link('extension/module/smsnot', 'token=' . $this->session->data['token'], 'SSL');
-		$this->data['cancel'] = $this->url->link('extension/extension', 'token=' . $this->session->data['token'], 'SSL');
+		$this->data['action'] = $this->url->link('extension/module/smsnot', 'user_token=' . $this->session->data['user_token'], 'SSL');
+		$this->data['cancel'] = $this->url->link('extension/extension', 'user_token=' . $this->session->data['user_token'], 'SSL');
 
 		$this->data['data'] = $this->model_setting_setting->getSetting('smsnot');
 		$this->data['balance'] = 0;
-		$this->data['token'] = $this->session->data['token'];
-		$this->data['log_href'] = $this->url->link('extension/module/smsnot/log', 'token=' . $this->session->data['token']);
-		$this->data['token'] = $this->session->data['token'];
+		$this->data['user_token'] = $this->session->data['user_token'];
+		$this->data['log_href'] = $this->url->link('extension/module/smsnot/log', 'user_token=' . $this->session->data['user_token']);
+		$this->data['user_token'] = $this->session->data['user_token'];
 
 		$this->data['statuses'] = $this->status_array;
 
 		$this->data['callback'] = str_replace("/admin", "", $this->url->link('api/smscallback', '', 'SSL'));
+
+		$this->data['notice'] = ( (isset($this->data['data']['smsnot-order-change'])) AND ($this->data['data']['smsnot-order-change']) ) ? '' : 'disable';
+		$this->data['show_help'] = ( (isset($this->data['data']['smsnot-log'])) AND ($this->data['data']['smsnot-log']) ) ? '' : 'show';
 
 		if ($this->data['data']['smsnot-apikey'] != '') {
 			$balance = $this->get_balance($this->data['data']['smsnot-apikey']);
@@ -188,7 +191,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		$this->data['header'] = $this->load->controller('common/header');
 		$this->data['column_left'] = $this->load->controller('common/column_left');
 		$this->data['footer'] = $this->load->controller('common/footer');
-		$this->response->setOutput($this->load->view('extension/module/smsnot.tpl', $this->data));
+		$this->response->setOutput($this->load->view('extension/module/smsnot', $this->data));
 	}
 
 	public function log() {
@@ -264,7 +267,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		} else {
 			$order = 'ASC';
 		}
-		$this->data['date'] = $this->url->link('extension/module/smsnot/log', 'token=' . $this->session->data['token'] . $url . '&sort=id&order='.$order, true);
+		$this->data['date'] = $this->url->link('extension/module/smsnot/log', 'user_token=' . $this->session->data['user_token'] . $url . '&sort=id&order='.$order, true);
 
 		$this->load->model('extension/module/smsnot');
 
@@ -287,22 +290,22 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		$pagination->total = $total;
 		$pagination->page = $page;
 		$pagination->limit = $this->config->get('config_limit_admin');
-		$pagination->url = $this->url->link('extension/module/smsnot/log', 'token=' . $this->session->data['token'] . $url . '&page={page}', true);
+		$pagination->url = $this->url->link('extension/module/smsnot/log', 'user_token=' . $this->session->data['user_token'] . $url . '&page={page}', true);
 
 		$this->data['pagination'] = $pagination->render();
 
 		$this->data['results'] = sprintf($this->language->get('text_pagination'), ($total) ? (($page - 1) * $this->config->get('config_limit_admin')) + 1 : 0, ((($page - 1) * $this->config->get('config_limit_admin')) > ($total - $this->config->get('config_limit_admin'))) ? $total : ((($page - 1) * $this->config->get('config_limit_admin')) + $this->config->get('config_limit_admin')), $total, ceil($total / $this->config->get('config_limit_admin')));
 
-		$this->response->setOutput($this->load->view('extension/module/smsnot_log.tpl', $this->data));
+		$this->response->setOutput($this->load->view('extension/module/smsnot_log', $this->data));
 	}
 
 	public function install() {
 		$this->load->model('extension/module/smsnot');
 		$this->model_extension_module_smsnot->install();
-		$this->load->model('extension/event');
+		$this->load->model('setting/event');
 
-		$this->model_extension_event->addEvent('smsnot', 'catalog/controller/checkout/success/before', 'extension/module/smsnot/onCheckout');
-		$this->model_extension_event->addEvent('smsnot', 'catalog/model/checkout/order/addOrderHistory/after', 'extension/module/smsnot/onHistoryChange');
+		$this->model_setting_event->addEvent('smsnot', 'catalog/controller/checkout/success/before', 'extension/module/smsnot/onCheckout');
+		$this->model_setting_event->addEvent('smsnot', 'catalog/model/checkout/order/addOrderHistory/after', 'extension/module/smsnot/onHistoryChange');
 
 		$this->load->model('setting/setting');
 		$basic=array(
@@ -332,8 +335,8 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		}
 		$this->load->model('extension/module/smsnot');
 		$this->model_extension_module_smsnot->uninstall();
-		$this->load->model('extension/event');
-		$this->model_extension_event->deleteEvent('smsnot');
+		$this->load->model('setting/event');
+		$this->model_setting_event->deleteEvent('smsnot');
 	}
 
 	public function send() {
