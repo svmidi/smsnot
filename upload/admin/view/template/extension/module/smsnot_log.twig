@@ -1,0 +1,34 @@
+<div class="table-responsive">
+	<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<td class="text-left"><a href="{{ date }}" class="sort">{{ column_date }}</a></td>
+				<td class="text-left">{{ column_text }}</td>
+				<td class="text-left">{{ column_sms_id }}</td>
+				<td class="text-left">{{ column_phone }}</td>
+				<td class="text-right">{{ column_status }}</td>
+			</tr>
+		</thead>
+		<tbody>
+			<?php if ($sends) { ?>
+			<?php foreach ($sends as $sms) { ?>
+			<tr>
+				<td class="text-left">{{ sms['date'] }}</td>
+				<td class="text-left">{{ sms['text'] }}</td>
+				<td class="text-left">{{ sms['sms_id'] }}</td>
+				<td class="text-left">{{ sms['phone'] }}</td>
+				<td class="text-right">{{ statuses[sms['status']] }}</td>
+			</tr>
+			<?php } ?>
+			<?php } else { ?>
+			<tr>
+				<td class="text-center" colspan="5">{{ text_no_results }}</td>
+			</tr>
+			<?php } ?>
+		</tbody>
+	</table>
+</div>
+<div class="row">
+	<div class="col-sm-6 text-left">{{ pagination }}</div>
+	<div class="col-sm-6 text-right">{{ results }}</div>
+</div>
