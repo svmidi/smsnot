@@ -1,4 +1,4 @@
-# smsnot 1.4.4
+# smsnot 1.5.0
 The module sending SMS notifications for OpenCart 2.x
 
 Description
