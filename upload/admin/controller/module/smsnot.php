@@ -45,6 +45,7 @@ class ControllerModuleSmsnot extends Controller {
 		$this->load->model('setting/setting');
 
 		$this->document->setTitle($this->language->get('heading_title'));
+		$settings = $this->model_setting_setting->getSetting('smsnot');
 
 		if(!isset($this->request->get['store_id'])) {
 			$this->request->get['store_id'] = 0; 
@@ -56,9 +57,13 @@ class ControllerModuleSmsnot extends Controller {
 				$this->session->data['error'] = 'You do not have permissions to edit this module!';
 			} else {
 				$this->model_setting_setting->editSetting('smsnot', $this->request->post, 0);
+				if (isset($this->request->post['smsnot-log'])) {
+					$url_callback = str_replace("/admin", "", $this->url->link('api/smscallback', '', 'SSL'));
+					$this->set_callback($settings['smsnot-apikey'], $url_callback, 'add');
+
+				}
 				$this->session->data['success'] = $this->language->get('text_success');
 			}
-			$this->response->redirect(HTTP_SERVER.'index.php?route=module/smsnot&store_id='.$this->request->get['store_id'] . '&token=' . $this->session->data['token']);
 		}
 
 		if (isset($this->session->data['success'])) {
@@ -167,7 +172,7 @@ class ControllerModuleSmsnot extends Controller {
 		$this->data['action'] = $this->url->link('module/smsnot', 'token=' . $this->session->data['token'], 'SSL');
 		$this->data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
 
-		$this->data['data'] = $this->model_setting_setting->getSetting('smsnot');
+		$this->data['data'] = $settings;
 		$this->data['balance'] = 0;
 		$this->data['token'] = $this->session->data['token'];
 		$this->data['log_href'] = $this->url->link('module/smsnot/log', 'token=' . $this->session->data['token']);
@@ -190,9 +195,9 @@ class ControllerModuleSmsnot extends Controller {
 			$this->data['customer_groups'] = $this->model_customer_customer_group->getCustomerGroups(0);
 		}
 
-		$this->data['header']		= $this->load->controller('common/header');
-		$this->data['column_left']	= $this->load->controller('common/column_left');
-		$this->data['footer']		= $this->load->controller('common/footer');
+		$this->data['header']      = $this->load->controller('common/header');
+		$this->data['column_left'] = $this->load->controller('common/column_left');
+		$this->data['footer']      = $this->load->controller('common/footer');
 		$this->response->setOutput($this->load->view('module/smsnot.tpl', $this->data));
 	}
 
@@ -331,13 +336,12 @@ class ControllerModuleSmsnot extends Controller {
 
 	public function uninstall() {
 		$this->load->model('setting/setting');
-		
-		$this->load->model('setting/store');
-		$this->model_setting_setting->deleteSetting('smsnot_module',0);
-		$stores=$this->model_setting_store->getStores();
-		foreach ($stores as $store) {
-			$this->model_setting_setting->deleteSetting('smsnot_module', $store['store_id']);
-		}
+
+		$settings = $this->model_setting_setting->getSetting('smsnot');
+		$url_callback = str_replace("/admin", "", $this->url->link('api/smscallback', '', 'SSL'));
+		$this->set_callback($settings['smsnot-apikey'], $url_callback, 'del');
+
+		$this->model_setting_setting->deleteSetting('smsnot_module', 0);
 		$this->load->model('module/smsnot');
 		$this->model_module_smsnot->uninstall();
 		$this->load->model('extension/event');
@@ -346,31 +350,34 @@ class ControllerModuleSmsnot extends Controller {
 
 	public function send() {
 		$json = array();
-		$this->load->model('setting/setting');
-
-		$settings = $this->model_setting_setting->getSetting('smsnot');
 
 		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+
 			if (!$this->user->hasPermission('modify', 'module/smsnot')) {
 				$json['error'] = 403;
 				$json['text'] = 'You do not have permission to perform this action!';
 			}
+
 			if (!$this->request->post['message']) {
 				$json['error'] = 404;
 				$json['text'] = 'The message field should not be empty!';
 			}
-			if (!$json) {
-				$resp = $this->sms_send($this->request->post['api'], $this->request->post['to'], $this->request->post['message'], $this->request->post['sender']);
 
-				if (isset($settings['smsnot-log']) && ($settings['smsnot-log'] == 'on')) {
-					$this->load->model('module/smsnot');
-					$log = $resp;
-					$log['phone'] = $this->request->post['to'];
-					$log['text'] = $this->request->post['message'];
-					$this->model_module_smsnot->setLogRecord($log);
+			if (!$json) {
+				$phones = explode(",", $this->request->post['to']);
+				foreach ($phones as $value) {
+					$phone = trim($value);
+					if ($phone) {
+						$to[$phone] = $this->request->post['message'];
+					}
 				}
+				$this->request->post['smsnot-log'] = ($this->request->post['smsnot-log'] == "true")?"on":0;
+
+				$resp = $this->sms_send($to, $this->request->post);
 			}
+
 		}
+
 		$this->response->setOutput(json_encode($resp));
 	}
 
@@ -395,8 +402,7 @@ class ControllerModuleSmsnot extends Controller {
 
 	public function massend() {
 		$this->load->model('module/smsnot');
-		$this->load->model('setting/setting');
-		$settings = $this->model_setting_setting->getSetting('smsnot');
+
 		$json = array();
 		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
 			if (!$this->user->hasPermission('modify', 'module/smsnot')) {
@@ -439,26 +445,14 @@ class ControllerModuleSmsnot extends Controller {
 							$query[$phone] = $message;
 							$log_phone .= $phone." ";
 							if ($i > 99) {
-								$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
+								$json = $this->sms_send($query);
 								$query = array();
 								$log_phone = '';
 								$i = 0;
-								if (isset($settings['smsnot-log']) && ($settings['smsnot-log'] == 'on')) {
-									$log = $json;
-									$log['phone'] = $log_phone;
-									$log['text'] = $this->request->post['message'];
-									$this->model_module_smsnot->setLogRecord($log);
-								}
 							}
 						}
 					}
-					$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
-					if (isset($settings['smsnot-log']) && ($settings['smsnot-log'] == 'on')) {
-						$log = $json;
-						$log['phone'] = $log_phone;
-						$log['text'] = $this->request->post['message'];
-						$this->model_module_smsnot->setLogRecord($log);
-					}
+					$json = $this->sms_send($query);
 				} else {
 					$phones = explode(',', $this->request->post['arbitrary']);
 					$query = array();
@@ -473,93 +467,127 @@ class ControllerModuleSmsnot extends Controller {
 							$log_phone .= $phone;
 						}
 					}
-					$json = $this->sms_multisend($settings['smsnot-apikey'], $query, $settings['smsnot-sender']);
-					if (isset($settings['smsnot-log']) && ($settings['smsnot-log'] == 'on')) {
-						$log = $json;
-						$log['phone'] = $log_phone;
-						$log['text'] = $this->request->post['message'];
-						$this->model_module_smsnot->setLogRecord($log);
-					}
+					$json = $this->sms_send($query);
+
 				}
 			}
 		}
 		$this->response->setOutput(json_encode($json));
 	}
 
-	private function read_response($response){
-		$result=array();
+	private function sms_send($text, $setting = 0) {
+
 		$this->load->language('module/smsnot');
-		if ($response) {
-			$ex = explode("\n", $response);
-			if ($ex[0] == 100) {
-				$balance=explode("=", $ex[2]);
-				$result['error'] = 100;
-				$result['smsru'] = $ex[1];
-				$result['balance'] = (isset($balance[1]))?$balance[1]:'n/a';
-				$result['text'] = $this->language->get('text_send_success');
-			} else {
-				$result['error'] = $ex[0];
-				$result['smsru'] = 0;
-				$result['text'] = $this->language->get('text_send_error').' ('.$this->status_array[$ex[0]].')';
-			}
-		} else {
-			$result['error'] = 500;
-			$result['text'] = $this->language->get('text_send_error').' (Unknown error)';
+
+		$this->load->model('module/smsnot');
+
+		if (!$setting) {
+			$this->load->model('setting/setting');
+			$setting = $this->model_setting_setting->getSetting('smsnot');
 		}
+		$logRec = ( (isset($setting['smsnot-log'])) AND ($setting['smsnot-log'] === "on") )?1:0;
+
+		if (extension_loaded('curl')) {
+			$param = array(
+			"api_id"     => $setting['smsnot-apikey'],
+			"to"         => $text,
+			"from"       => $setting['smsnot-sender'],
+			"json"       => 1,
+			"partner_id" => 34316);
+			$send = http_build_query($param);
+			$ch = curl_init("http://sms.ru/sms/send");
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $send);
+			$results = curl_exec($ch);
+			curl_close($ch);
+		} else {
+			$url_phone = '';
+			foreach ($text as $key => $value) {
+				$url_phone .= '&to['.$key.']='.urlencode($value);
+			}
+			$results = file_get_contents('http://sms.ru/sms/send?api_id='.$setting['smsnot-apikey'].$url_phone.'&from='.$setting['smsnot-sender'].'&partner_id=34316&json=1');
+		}
+
+		$data = json_decode($results, true);
+
+		if ($data['status_code'] == 100) {
+			$result['error'] = 100;
+
+			if ($logRec) {
+				foreach ($data['sms'] as $key => $value) {
+					$log['error'] = $value['status_code'];
+					$log['smsru'] = $value['sms_id'];
+					$log['phone'] = $key;
+					$log['text'] = $text[$key];
+					$this->model_module_smsnot->setLogRecord($log);
+				}
+			}
+
+			$result['balance'] = $data['balance'];
+			$result['text'] = $this->language->get('text_send_success');
+		} else {
+			$result['error'] = $data['status_code'];
+			$result['text'] = $this->language->get('text_send_error').' ('.$this->status_array[$data['status_code']].')';
+		}
+
+		$result['test'] = $results;
 
 		return $result;
 	}
 
-	private function sms_send($api_id, $to = 0, $text = 0, $sender = '') {
-		$param = array(
-		"api_id"     => $api_id,
-		"to"         => $to,
-		"text"       => $text,
-		"from"       => $sender,
-		"partner_id" => 34316);
-		$ch = curl_init("http://sms.ru/sms/send");
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
-		$result = curl_exec($ch);
-		curl_close($ch);
-		return $this->read_response($result);
-	}
-
-	private function sms_multisend($api_id, $text, $sender = '') {
-		$param = array(
-		"api_id"     => $api_id,
-		"multi"      => $text,
-		"from"       => $sender,
-		"partner_id" => 34316);
-		/*$send = http_build_query($param);
-		$ch = curl_init("http://sms.ru/sms/send");
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $send);
-		$result = curl_exec($ch);
-		curl_close($ch);*/
-		$result = "100\n2016123\nbalance=33";
-		return $this->read_response($result);
-	}
-
-	private function get_balance($api_key = '') {
-		$ch = curl_init("http://sms.ru/my/balance");
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, array(
-			"api_id" => $api_key
-		));
-		$response = curl_exec($ch);
-		curl_close($ch);
-		$ex = explode("\n", $response);
-		if (count($ex) == 1) {
-			$json['error'] = $response;
-			$json['text'] = $this->status_array[$response];
+	private function get_balance($api_id = '') {
+		if (extension_loaded('curl')) {
+			$ch = curl_init("http://sms.ru/my/balance");
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, array(
+				"api_id" => $api_id,
+				"json"   => 1
+			));
+			$response = curl_exec($ch);
+			curl_close($ch);
 		} else {
-			$json['error'] = 0;
-			$json['balance'] = $ex[1];
+			$response = file_get_contents('http://sms.ru/my/balance?api_id='.$api_id.'&json=1');
 		}
+
+		$send_data = json_decode($response, true);
+
+		if ($send_data['status_code'] == 100) {
+			$json['error'] = 0;
+			$json['balance'] = $send_data['balance'];
+		} else {
+			$json['error'] = $send_data['status_code'];
+			$json['text'] = (isset($this->status_array[$send_data['status_code']]))?$this->status_array[$send_data['status_code']]:'Error #'.$send_data['status_code'];
+		}
+
+		return $json;
+	}
+
+	private function set_callback($api_id = '', $url, $action) {
+		if (extension_loaded('curl')) {
+			$ch = curl_init("https://sms.ru/callback/".$action);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, array(
+				"api_id" => $api_id,
+				"url"    => $url,
+				"json"   => 1
+			));
+			$response = curl_exec($ch);
+			curl_close($ch);
+		} else {
+			$response = file_get_contents('https://sms.ru/callback/'.$action.'?api_id='.$api_id.'&url='.urlencode($url).'&json=1');
+		}
+
+		$send_data = json_decode($response, true);
+
+		if ($send_data['status_code'] == 100) {
+			$json['error'] = 0;
+		} else {
+			$json['error'] = $send_data['status_code'];
+		}
+
 		return $json;
 	}
 }
