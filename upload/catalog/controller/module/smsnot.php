@@ -47,8 +47,6 @@ class ControllerModuleSmsnot extends Controller {
 				} else {
 					$ok = 1;
 				}
-				$log = new Log('smsnot_log.txt');
-				$log->write('change-notice='.$setting['smsnot-order-change'].', ok='.$ok.': catalog');
 
 				if ((preg_match('/(\+|)[0-9]{11,12}/', $phone)) && ($ok)) {
 					$this->sms_send($setting['smsnot-apikey'], $phone, $message, $setting['smsnot-sender'], $sms_log);
