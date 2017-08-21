@@ -59,8 +59,7 @@ class ControllerModuleSmsnot extends Controller {
 				$this->model_setting_setting->editSetting('smsnot', $this->request->post, 0);
 				if (isset($this->request->post['smsnot-log'])) {
 					$url_callback = str_replace("/admin", "", $this->url->link('api/smscallback', '', 'SSL'));
-					$this->set_callback($settings['smsnot-apikey'], $url_callback, 'add');
-
+					$this->set_callback($this->request->post['smsnot-apikey'], $url_callback, 'add');
 				}
 				$this->session->data['success'] = $this->language->get('text_success');
 			}
