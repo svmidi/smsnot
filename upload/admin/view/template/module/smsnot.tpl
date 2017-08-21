@@ -369,7 +369,6 @@ $(document).ready(function() {
 	});
 
 	$("#test_send").click(function() {
-		alert($('#input-smsnot-log').is(':checked'))
 		var data = "&smsnot-sender="+$('#input-sender').val()+"&to="+$('#input-phone').val()+"&smsnot-apikey="+$('#input-apikey').val()+"&message=test&smsnot-log="+$('#input-smsnot-log').is(':checked');
 		var btn = $(this);
 		btn.button('loading');
