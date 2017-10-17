@@ -45,7 +45,7 @@ $_['entry_smsnot_log']         = 'Enable log: ';
 
 $_['text_enable']              = 'enabled';
 $_['text_disable']             = 'disabled';
-$_['text_description']         = 'SMS-message';
+$_['text_description']         = 'SMS-message (SMSnot 1.5.0)';
 $_['text_newsletter']          = 'Subscribe to news';
 $_['text_all']                 = 'All';
 $_['text_all_group']           = 'All of the group';
@@ -74,7 +74,7 @@ $_['help_message_customer']    = 'The message that will get the customer to crea
 $_['help_message_admin']       = 'The message that will get the owner to create a new order. {OrderID} - order id, {StoreName} - store name, {Total} - order price.';
 $_['help_message']             = 'The message. {Name} - first name, {LastName} - last name, {StoreName} - store name.';
 $_['help_sure']                = 'You are sure?';
-$_['help_callback']            = 'Enter address sms callback <a href="https://svmidi.sms.ru/?panel=apps&subpanel=cb" target="_blank">sms.ru</a>';
+$_['help_callback']            = 'Callback URL automatically added. If this did not happen, add manually in field "URL of the handler" on the site <a href="https://svmidi.sms.ru/?panel=apps&subpanel=cb" target="_blank">sms.ru</a>';
 $_['help_arbitrary']           = 'Enter the phone or phones, separated by commas. For example: 79000000000,79000000001,79000000002';
-$_['help_phone']               = 'Enter a comma-separated numbers to which messages will be sent a new order (89000000001,99220000002). The test message will be sent only to the first number.';
+$_['help_phone']               = 'Enter a comma-separated numbers to which messages will be sent a new order (89000000001,99220000002).';
 ?>
