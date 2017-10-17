@@ -49,16 +49,20 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		}
 	}
 
-	public function onHistoryChange($order_id = 0) {
+	public function onHistoryChange($order = 0) {
 
-		if ($order_id == 0) {
-			if (isset($this->request->get['order_id'])) {
-				$order_id = $this->request->get['order_id'];
-			} elseif (isset($this->request->post['order_id'])) {
-				$order_id = $this->request->post['order_id'];
-			} elseif ($this->session->data['order_id']) {
-				$order_id = $this->session->data['order_id'];
-			}
+		if (is_array($order)) {
+			$order_id = $order['order_id'];
+		}  elseif (($order == 0) AND (isset($this->session->data['order_id']))) {
+			$order_id = $this->session->data['order_id'];
+		} elseif (($order == 0) AND (isset($this->request->get['order_id']))) {
+			$order_id = $this->request->get['order_id'];
+		} elseif (($order == 0) AND (isset($this->request->post['order_id']))) {
+			$order_id = $this->request->post['order_id'];
+		} elseif ($order != 0) {
+			$order_id = $order
+		} else {
+			return;
 		}
 
 		$this->load->model('checkout/order');
@@ -69,7 +73,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		$setting = $this->model_setting_setting->getSetting('smsnot');
 		$sms_log = (isset($setting['smsnot-log']))?$setting['smsnot-log']:0;
 
-		if(isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey'])) && (isset($setting['smsnot-order-change'])) && ($setting['smsnot-order-change'] == 'on')) {
+		if(isset($setting) && ($setting['smsnot-enabled']) && (!empty($setting['smsnot-apikey'])) && ((isset($setting['smsnot-order-change'])) && ($setting['smsnot-order-change'] == 'on')) || ((isset($setting['smsnot-new-order'])) && ($setting['smsnot-new-order'] == 'on')) || ((isset($setting['smsnot-owner'])) && ($setting['smsnot-owner'] == 'on'))) {
 
 			if ($this->model_extension_module_smsnot->getHistoryCount($order_id) > 1) {
 
@@ -88,6 +92,10 @@ class ControllerExtensionModuleSmsnot extends Controller {
 					$ok = 1;
 				} elseif ((isset($setting['smsnot-order-change-notice'])) && ($setting['smsnot-order-change-notice'] == 'on') && (!$history['notify'])) {
 					$ok = 0;
+				} elseif ( (!isset($setting['smsnot-order-change-notice'])) && (isset($setting['smsnot-order-change'])) && ($setting['smsnot-order-change'] == 'on') ) {
+					$ok = 1;
+				} elseif (!isset($setting['smsnot-order-change'])) {
+					$ok = 0;
 				} else {
 					$ok = 1;
 				}
@@ -100,28 +108,44 @@ class ControllerExtensionModuleSmsnot extends Controller {
 	}
 
 	private function sms_send($api_id, $to = 0, $text = 0, $sender = '', $logRec = 0) {
-		$param=array(
-		"api_id"	 =>	$api_id,
-		"to"		 =>	$to,
-		"text"		 =>	$text,
-		"from"		 =>	$sender,
-		"partner_id" => 34316);
-		$ch = curl_init("http://sms.ru/sms/send");
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
-		$result = curl_exec($ch);
-		curl_close($ch);
-
-		if ($logRec) {
-			$this->load->model('extension/module/smsnot');
-			$resp = $this->read_response($result);
-			$resp['phone'] = $to;
-			$resp['text'] = $text;
-			$this->model_extension_module_smsnot->setLogRecord($resp);
+		if (extension_loaded('curl')) {
+			$param = array(
+			"api_id"	 =>	$api_id,
+			"to"		 =>	$to,
+			"text"		 =>	$text,
+			"from"		 =>	$sender,
+			"json"       => 1,
+			"partner_id" => 34316);
+			$ch = curl_init("http://sms.ru/sms/send");
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
+			$result = curl_exec($ch);
+			curl_close($ch);
+		} else {
+			$result = file_get_contents('http://sms.ru/sms/send?api_id='.$api_id.'&to='.$to.'$text='.$text.'&from='.$sender.'&partner_id=34316&json=1');
 		}
 
-		return $result;
+		$send_data = json_decode($result, true);
+
+		if ($logRec) {
+			$this->load->model('module/smsnot');
+			$to_log = array();
+
+			if ($send_data['status_code'] == 100) {
+				$to_log['error'] = $send_data['sms'][$to]['status_code'];
+				$to_log['smsru'] = $send_data['sms'][$to]['sms_id'];
+			} else {
+				$to_log['error'] = $send_data['status_code'];
+				$to_log['smsru'] = 0;
+			}
+
+			$to_log['phone'] = $to;
+			$to_log['text'] = $text;
+			$this->model_extension_module_smsnot->setLogRecord($to_log);
+		}
+
+		return true;
 
 		/*$log = new Log('smsnot_log.txt');
 		$log->write('login('.$param["api_id"].'), phone('.$param["to"].'), text('.$param["text"].'), sender('.$param["from"].'): catalog');
@@ -129,17 +153,4 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		return $json;*/
 	}
 
-	private function read_response($response){
-		$ex = explode("\n", $response);
-		$result=array();
-		if ($ex[0] == 100) {
-			$balance=explode("=", $ex[2]);
-			$result['error'] = 100;
-			$result['smsru'] = $ex[1];
-		} else {
-			$result['error'] = $ex[0];
-			$result['smsru'] = 0;
-		}
-		return $result;
-	}
 }
