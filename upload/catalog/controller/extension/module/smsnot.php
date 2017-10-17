@@ -115,14 +115,14 @@ class ControllerExtensionModuleSmsnot extends Controller {
 			"from"       => $sender,
 			"json"       => 1,
 			"partner_id" => 34316);
-			$ch = curl_init("http://smstest.43vp.ru/sms/send/");
+			$ch = curl_init("http://sms.ru/sms/send");
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
 			$result = curl_exec($ch);
 			curl_close($ch);
 		} else {
-			$result = file_get_contents('http://smstest.43vp.ru/sms/send/?api_id='.$api_id.'&to='.$to.'$text='.$text.'&from='.$sender.'&partner_id=34316&json=1');
+			$result = file_get_contents('http://sms.ru/sms/send?api_id='.$api_id.'&to='.$to.'$text='.$text.'&from='.$sender.'&partner_id=34316&json=1');
 		}
 
 		$send_data = json_decode($result, true);

@@ -486,7 +486,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 			"json"       => 1,
 			"partner_id" => 34316);
 			$send = http_build_query($param);
-			$ch = curl_init("http://smstest.43vp.ru/sms/send/");
+			$ch = curl_init("http://sms.ru/sms/send");
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $send);
@@ -497,7 +497,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 			foreach ($text as $key => $value) {
 				$url_phone .= '&to['.$key.']='.urlencode($value);
 			}
-			$results = file_get_contents('http://smstest.43vp.ru/sms/send/?api_id='.$setting['smsnot-apikey'].$url_phone.'&from='.$setting['smsnot-sender'].'&partner_id=34316&json=1');
+			$results = file_get_contents('http://sms.ru/sms/send?api_id='.$setting['smsnot-apikey'].$url_phone.'&from='.$setting['smsnot-sender'].'&partner_id=34316&json=1');
 		}
 
 		$data = json_decode($results, true);
@@ -527,9 +527,9 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		return $result;
 	}
 
-	private function get_balance($api_key = '') {
+	private function get_balance($api_id = '') {
 		if (extension_loaded('curl')) {
-			$ch = curl_init("http://smstest.43vp.ru/my/balance/");
+			$ch = curl_init("http://sms.ru/my/balance");
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, array(
@@ -539,7 +539,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 			$response = curl_exec($ch);
 			curl_close($ch);
 		} else {
-			$response = file_get_contents('http://smstest.43vp.ru/my/balance/?api_id='.$api_id.'&json=1');
+			$response = file_get_contents('http://sms.ru/my/balance?api_id='.$api_id.'&json=1');
 		}
 
 		$send_data = json_decode($response, true);
