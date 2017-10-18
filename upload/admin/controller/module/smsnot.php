@@ -529,8 +529,6 @@ class ControllerModuleSmsnot extends Controller {
 			$result['text'] = $this->language->get('text_send_error').' ('.$this->status_array[$data['status_code']].')';
 		}
 
-		$result['test'] = $results;
-
 		return $result;
 	}
 
