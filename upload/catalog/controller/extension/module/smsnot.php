@@ -60,7 +60,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		} elseif (($order == 0) AND (isset($this->request->post['order_id']))) {
 			$order_id = $this->request->post['order_id'];
 		} elseif ($order != 0) {
-			$order_id = $order
+			$order_id = $order;
 		} else {
 			return;
 		}
