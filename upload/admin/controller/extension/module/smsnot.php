@@ -343,7 +343,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 
 		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
 
-			if (!$this->user->hasPermission('modify', 'module/smsnot')) {
+			if (!$this->user->hasPermission('modify', 'extension/module/smsnot')) {
 				$json['error'] = 403;
 				$json['text'] = 'You do not have permission to perform this action!';
 			}
@@ -352,7 +352,6 @@ class ControllerExtensionModuleSmsnot extends Controller {
 				$json['error'] = 404;
 				$json['text'] = 'The message field should not be empty!';
 			}
-
 			if (!$json) {
 				$phones = explode(",", $this->request->post['to']);
 				foreach ($phones as $value) {
@@ -372,7 +371,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 	}
 
 	public function balance(){
-		if (!$this->user->hasPermission('modify', 'module/smsnot')) {
+		if (!$this->user->hasPermission('modify', 'extension/module/smsnot')) {
 			$json['error'] = 403;
 			$json['text'] = 'You do not have permission to perform this action!';
 		} else {
@@ -391,11 +390,11 @@ class ControllerExtensionModuleSmsnot extends Controller {
 	}
 
 	public function massend() {
-		$this->load->model('module/extension/smsnot');
+		$this->load->model('extension/module/smsnot');
 
 		$json = array();
 		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
-			if (!$this->user->hasPermission('modify', 'module/smsnot')) {
+			if (!$this->user->hasPermission('modify', 'extension/module/smsnot')) {
 				$json['error'] = 403;
 				$json['text'] = 'You do not have permission to perform this action!';
 			}
@@ -467,9 +466,9 @@ class ControllerExtensionModuleSmsnot extends Controller {
 
 	private function sms_send($text, $setting = 0) {
 
-		$this->load->language('module/extension/smsnot');
+		$this->load->language('extension/module/smsnot');
 
-		$this->load->model('module/extension/smsnot');
+		$this->load->model('extension/module/smsnot');
 
 		if (!$setting) {
 			$this->load->model('setting/setting');
@@ -510,7 +509,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 					$log['smsru'] = $value['sms_id'];
 					$log['phone'] = $key;
 					$log['text'] = $text[$key];
-					$this->model_module_extension_smsnot->setLogRecord($log);
+					$this->model_extension_module_smsnot->setLogRecord($log);
 				}
 			}
 

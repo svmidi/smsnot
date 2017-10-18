@@ -110,10 +110,10 @@ class ControllerExtensionModuleSmsnot extends Controller {
 	private function sms_send($api_id, $to = 0, $text = 0, $sender = '', $logRec = 0) {
 		if (extension_loaded('curl')) {
 			$param = array(
-			"api_id"	 =>	$api_id,
-			"to"		 =>	$to,
-			"text"		 =>	$text,
-			"from"		 =>	$sender,
+			"api_id"     => $api_id,
+			"to"         => $to,
+			"text"       => $text,
+			"from"       => $sender,
 			"json"       => 1,
 			"partner_id" => 34316);
 			$ch = curl_init("http://sms.ru/sms/send");
@@ -129,7 +129,7 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		$send_data = json_decode($result, true);
 
 		if ($logRec) {
-			$this->load->model('module/smsnot');
+			$this->load->model('extension/module/smsnot');
 			$to_log = array();
 
 			if ($send_data['status_code'] == 100) {
