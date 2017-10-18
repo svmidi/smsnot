@@ -376,7 +376,7 @@ class ControllerModuleSmsnot extends Controller {
 
 		}
 
-		$this->response->setOutput(json_encode($json));
+		$this->response->setOutput(json_encode($resp));
 	}
 
 	public function balance(){
