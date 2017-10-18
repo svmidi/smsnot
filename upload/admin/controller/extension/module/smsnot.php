@@ -175,7 +175,6 @@ class ControllerExtensionModuleSmsnot extends Controller {
 		$this->data['balance'] = 0;
 		$this->data['token'] = $this->session->data['token'];
 		$this->data['log_href'] = $this->url->link('extension/module/smsnot/log', 'token=' . $this->session->data['token']);
-		$this->data['token'] = $this->session->data['token'];
 
 		$this->data['statuses'] = $this->status_array;
 
