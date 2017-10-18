@@ -47,7 +47,7 @@
 			<li class="active"><a href="#tab-sending" data-toggle="tab"><?php echo $tab_sending; ?></a></li>
 			<li><a href="#tab-notice" data-toggle="tab"><?php echo $tab_notice; ?></a></li>
 			<li><a href="#tab-gate" data-toggle="tab"><?php echo $tab_gate; ?></a></li>
-			<li><a href="#tab-log" data-toggle="tab"><?php echo $tab_log; ?></a></li>
+			<li><a href="#tab-log" id="load-log" data-toggle="tab"><?php echo $tab_log; ?></a></li>
 		</ul>
 		<div class="tab-content">
 			<div class="tab-pane active in" id="tab-sending">
@@ -369,7 +369,7 @@ $(document).ready(function() {
 	});
 
 	$("#test_send").click(function() {
-		var data = "&sender="+$('#input-sender').val()+"&to="+$('#input-phone').val()+"&api="+$('#input-apikey').val()+"&message=test";
+		var data = "&smsnot-sender="+$('#input-sender').val()+"&to="+$('#input-phone').val()+"&smsnot-apikey="+$('#input-apikey').val()+"&message=test&smsnot-log="+$('#input-smsnot-log').is(':checked');
 		var btn = $(this);
 		btn.button('loading');
 		$.ajax({
@@ -426,12 +426,12 @@ $(document).ready(function() {
 			$('#arbitrary').addClass('has-error');
 		} else {
 			$('#arbitrary').removeClass('has-error');
-			var data = "&sender="+$('#input-sender').val()+"&api="+$('#input-apikey').val()+"&message="+$('#input-message').val()+"&to="+$('#input-to option:selected').val()+"&arbitrary="+$('#input-arbitrary').val();
+			var data = "&smsnot-sender="+$('#input-sender').val()+"&smsnot-apikey="+$('#input-apikey').val()+"&message="+$('#input-message').val()+"&to="+$('#input-to option:selected').val()+"&arbitrary="+$('#input-arbitrary').val();
 			var btn = $(this);
 			btn.button('loading');
 			$.ajax({
 				type: "POST",
-				url: "index.php?route=extension/module/smsnot/massend&token=<?php echo $token; ?>",
+				url: "index.php?route=module/smsnot/massend&token=<?php echo $token; ?>",
 				cache: false,
 				data: data,
 				success: function(html){
@@ -492,7 +492,9 @@ $(document).ready(function() {
 		$('#log').load(this.href);
 	});
 
-	$('#log').load('index.php?route=module/smsnot/log&token=<?php echo $token; ?>');
+	$("#load-log").click(function() {
+		$('#log').load('index.php?route=module/smsnot/log&token=<?php echo $token; ?>');
+	});
 
 	$('.date').datetimepicker({
 		pickTime: false
